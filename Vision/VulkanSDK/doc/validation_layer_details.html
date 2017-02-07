@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="icon" href="vulkan_lunarg_icon.png">
+<link rel="stylesheet" href="github-markdown.css">
+<style>
+    body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+</style>
+</head>
+<body>
+<article class="markdown-body">
+<p>[TOC]</p>
+
+<h1>
+<a id="user-content-validation-layer-details" class="anchor" href="#user-content-validation-layer-details" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Validation Layer Details</h1>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_standard_validation" class="anchor" href="#user-content-vk_layer_lunarg_standard_validation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_standard_validation</h2>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_standard_validation-overview" class="anchor" href="#user-content-vk_layer_lunarg_standard_validation-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_standard_validation Overview</h3>
+
+<p>This is a meta-layer managed by the loader. On desktop systems, specifying this layer name will cause the loader to load the all of the standard validation layers in the following optimal order:</p>
+
+<ul>
+<li>VK_LAYER_GOOGLE_threading</li>
+<li>VK_LAYER_LUNARG_parameter_validation</li>
+<li>VK_LAYER_LUNARG_object_tracker</li>
+<li>VK_LAYER_LUNARG_image</li>
+<li>VK_LAYER_LUNARG_core_validation</li>
+<li>VK_LAYER_LUNARG_swapchain</li>
+<li>VK_LAYER_GOOGLE_unique_objects</li>
+</ul>
+
+<p>For platforms not using the standard loader (i.e., mobile platforms) the layers should be declared explicitly in the order shown above.</p>
+
+<p>Other layers can be specified and the loader will remove duplicates. See the following individual layer descriptions for layer details.</p>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_core_validation" class="anchor" href="#user-content-vk_layer_lunarg_core_validation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation</h2>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-overview" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Overview</h3>
+
+<p>The VK_LAYER_LUNARG_core_validation layer is the main layer performing state tracking, object and state lifetime validation, and consistency and coherency between these states and the requirements, limits, and capabilities. Currently, it is divided into three main areas of validation:  Draw State, Memory Tracking, and Shader Checking.</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-draw-state-details-table" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-draw-state-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Draw State Details Table</h3>
+
+<p>The Draw State portion of the core validation layer tracks state leading into Draw commands. This includes the Pipeline state, dynamic state, shaders, and descriptor set state. This functionality validates the consistency and correctness between and within these states.</p>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM DRAWSTATE_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Pipeline Layouts</td>
+<td>Verify that sets being bound are compatible with their PipelineLayout and that the last-bound PSO PipelineLayout at Draw time is compatible with all bound sets used by that PSO</td>
+<td>PIPELINE_LAYOUTS_INCOMPATIBLE</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DescriptorSetCompatibility</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid BeginCommandBuffer state</td>
+<td>Must not call Begin on command buffers that are being recorded, and primary command buffers must specify VK_NULL_HANDLE for RenderPass or Framebuffer parameters, while secondary command buffers must provide non-null parameters,</td>
+<td>BEGIN_CB_INVALID_STATE</td>
+<td>vkBeginCommandBuffer</td>
+<td>CallBeginCommandBufferBeforeCompletion SecondaryCommandBufferNullRenderpass</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Command Buffer Simultaneous Use</td>
+<td>Violation of VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT rules. Most likely attempting to simultaneously use a CmdBuffer w/o having that bit set. This also warns if you add secondary command buffer w/o that bit set to a primary command buffer that does have that bit set.</td>
+<td>INVALID_CB_SIMULTANEOUS_USE</td>
+<td>vkQueueSubmit vkCmdExecuteCommands</td>
+<td>CommandBufferTwoSubmits SimultaneousUse</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid Command Buffer Reset</td>
+<td>Can only reset individual command buffer that was allocated from a pool with VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT set</td>
+<td>INVALID_COMMAND_BUFFER_RESET</td>
+<td>vkBeginCommandBuffer vkResetCommandBuffer</td>
+<td>CommandBufferResetErrors</td>
+<td>None</td>
+</tr>
+<tr>
+<td>PSO Bound</td>
+<td>Verify that a properly created and valid pipeline object is bound to the CommandBuffer specified in these calls</td>
+<td>NO_PIPELINE_BOUND</td>
+<td>vkCmdBindDescriptorSets vkCmdBindVertexBuffers</td>
+<td>PipelineNotBound</td>
+<td>This check is currently more related to VK_LAYER_LUNARG_core_validation internal data structures and less about verifying that PSO is bound at all appropriate points in API. For API purposes, need to make sure this is checked at Draw time and any other relevant calls.</td>
+</tr>
+<tr>
+<td>Valid DescriptorSet</td>
+<td>Validate that descriptor set was properly created and is currently valid</td>
+<td>INVALID_SET</td>
+<td>vkCmdBindDescriptorSets</td>
+<td>InvalidDescriptorSet</td>
+<td>Is this needed other places (like Update/Clear descriptors)</td>
+</tr>
+<tr>
+<td>Valid DescriptorSetLayout</td>
+<td>Flag DescriptorSetLayout object that was not properly created</td>
+<td>INVALID_LAYOUT</td>
+<td>vkAllocateDescriptorSets</td>
+<td>InvalidDescriptorSetLayout</td>
+<td>Anywhere else to check this?</td>
+</tr>
+<tr>
+<td>Valid RenderArea</td>
+<td>Flag renderArea field that is outside of the framebuffer</td>
+<td>INVALID_RENDER_AREA</td>
+<td>vkCmdBeginRenderPass</td>
+<td>RenderPassInvalidRenderArea</td>
+<td>Anywhere else to check this?</td>
+</tr>
+<tr>
+<td>Valid Pipeline</td>
+<td>Flag VkPipeline object that was not properly created, or case when Draw/Dispatch is bound to cmd buffer without a pipeline being bound</td>
+<td>INVALID_PIPELINE</td>
+<td>vkCmdBindPipeline</td>
+<td>InvalidPipeline</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Sampler</td>
+<td>Flag VkSampler object that was not properly created and/or is unknown.</td>
+<td>INVALID_SAMPLER</td>
+<td>vkQueueSubmit</td>
+<td>InvalidCmdBufferDescriptorSetImageSamplerDestroyed</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Pipeline Create Info</td>
+<td>Tests for the following: That compute shaders are not specified for the graphics pipeline, tess evaluation and tess control shaders are included or excluded as a pair, that VK_PRIMITIVE_TOPOLOGY_PATCH_LIST is set as IA topology for tessellation pipelines, that VK_PRIMITIVE_TOPOLOGY_PATCH_LIST primitive topology is only set for tessellation pipelines, and that Vtx Shader specified</td>
+<td>INVALID_PIPELINE_CREATE_STATE</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>InvalidPipelineCreateState</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid CommandBuffer</td>
+<td>Validates that the command buffer object was properly created and is currently valid</td>
+<td>INVALID_COMMAND_BUFFER</td>
+<td>vkQueueSubmit vkBeginCommandBuffer vkEndCommandBuffer vkCmdBindPipeline vkCmdBindDescriptorSets vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatch vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearAttachments vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage vkCmdSetEvent vkCmdResetEvent vkCmdWaitEvents vkCmdPipelineBarrier vkCmdBeginQuery vkCmdEndQuery vkCmdResetQueryPool vkCmdWriteTimestamp vkCmdBeginRenderPass vkCmdNextSubpass vkCmdEndRenderPass vkCmdExecuteCommands vkAllocateCommandBuffers</td>
+<td>InvalidCmdBufferBufferDestroyed InvalidCmdBufferImageDestroyed InvalidCmdBufferEventDestroyed InvalidCmdBufferQueryPoolDestroyed InvalidCmdBufferPipelineDestroyed ExecuteCommandsPrimaryCB InvalidCmdBufferDescriptorSetBufferDestroyed InvalidCmdBufferDescriptorSetImageSamplerDestroyed</td>
+<td>TODO - missing tests for 8 separate cases where this error is flagged. Cases are getCBNode(), 1st case in validateCmdsInCmdBuffer(), checkGraphicsBit(), checkComputeBit(), checkGraphicsOrComputeBit(), BeginCommandBuffer(), validatePrimaryCommandBuffer() and CmdExecuteCommands()</td>
+</tr>
+<tr>
+<td>Vtx Buffer Bounds</td>
+<td>Check if VBO index too large for PSO Vtx binding count, and that at least one vertex buffer is attached to pipeline object</td>
+<td>VTX_INDEX_OUT_OF_BOUNDS</td>
+<td>vkCmdBindDescriptorSets vkCmdBindVertexBuffers</td>
+<td>VtxBufferBadIndex</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Idx Buffer Alignment</td>
+<td>Verify that offset of Index buffer falls on an alignment boundary as defined by IdxBufferAlignmentError param</td>
+<td>VTX_INDEX_ALIGNMENT_ERROR</td>
+<td>vkCmdBindIndexBuffer</td>
+<td>IdxBufferAlignmentError</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Cmd Buffer End</td>
+<td>Verifies that EndCommandBuffer was called for this commandBuffer at QueueSubmit time</td>
+<td>NO_END_COMMAND_BUFFER</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Cmd Buffer Begin</td>
+<td>Check that BeginCommandBuffer was called for this command buffer when binding commands or calling end</td>
+<td>NO_BEGIN_COMMAND_BUFFER</td>
+<td>vkEndCommandBuffer vkCmdBindPipeline vkCmdSetViewport vkCmdSetLineWidth vkCmdSetDepthBias vkCmdSetBlendConstants vkCmdSetDepthBounds vkCmdSetStencilCompareMask vkCmdSetStencilWriteMask vkCmdSetStencilReference vkCmdBindDescriptorSets vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatch vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearAttachments vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage vkCmdSetEvent vkCmdResetEvent vkCmdWaitEvents vkCmdPipelineBarrier vkCmdBeginQuery vkCmdEndQuery vkCmdResetQueryPool vkCmdWriteTimestamp</td>
+<td>NoBeginCommandBuffer</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Cmd Buffer Submit Count</td>
+<td>Verify that ONE_TIME submit cmdbuffer is not submitted multiple times</td>
+<td>COMMAND_BUFFER_SINGLE_SUBMIT_VIOLATION</td>
+<td>vkBeginCommandBuffer, vkQueueSubmit</td>
+<td>CommandBufferTwoSubmits</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Secondary CommandBuffer</td>
+<td>Validates that no primary command buffers are sent to vkCmdExecuteCommands() are</td>
+<td>INVALID_SECONDARY_COMMAND_BUFFER</td>
+<td>vkCmdExecuteCommands</td>
+<td>ExecuteCommandsPrimaryCB</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Invalid Descriptor Set</td>
+<td>Invalid Descriptor Set used. Either never created or already destroyed.</td>
+<td>INVALID_DESCRIPTOR_SET</td>
+<td>vkQueueSubmit vkUpdateDescriptorSets</td>
+<td>TODO</td>
+<td>Create Tests as needed. Should also cross-check with object_tracker to see if any of these cases can be removed as redundant</td>
+</tr>
+<tr>
+<td>Descriptor Type</td>
+<td>Verify Descriptor type in bound descriptor set layout matches descriptor type specified in update. This also includes mismatches in the TYPES of copied descriptors.</td>
+<td>DESCRIPTOR_TYPE_MISMATCH</td>
+<td>vkUpdateDescriptorSets</td>
+<td>DSTypeMismatch CopyDescriptorUpdateErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Descriptor StageFlags</td>
+<td>Verify all descriptors within a single write update have the same stageFlags</td>
+<td>DESCRIPTOR_STAGEFLAGS_MISMATCH</td>
+<td>vkUpdateDescriptorSets</td>
+<td>WriteDescriptorSetIntegrityCheck</td>
+<td></td>
+</tr>
+<tr>
+<td>DS Update Size</td>
+<td>DS update out of bounds for given layout section.</td>
+<td>DESCRIPTOR_UPDATE_OUT_OF_BOUNDS</td>
+<td>vkUpdateDescriptorSets</td>
+<td>DSUpdateOutOfBounds CopyDescriptorUpdateErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Descriptor Pool empty</td>
+<td>Attempt to allocate descriptor type from descriptor pool when no more of that type are available to be allocated.</td>
+<td>DESCRIPTOR_POOL_EMPTY</td>
+<td>vkAllocateDescriptorSets</td>
+<td>AllocDescriptorFromEmptyPool</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Free from NON_FREE Pool</td>
+<td>It's invalid to call vkFreeDescriptorSets() on Sets that were allocated from a Pool created with NON_FREE usage.</td>
+<td>CANT_FREE_FROM_NON_FREE_POOL</td>
+<td>vkFreeDescriptorSets</td>
+<td>FreeDescriptorFromOneShotPool</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>DS Write Update</td>
+<td>DS write update with invalid state which includes things like bad update objects, bad update sizes, and bad descriptor binding values.</td>
+<td>INVALID_WRITE_UPDATE</td>
+<td>vkUpdateDescriptorSets</td>
+<td>InvalidDSUpdateIndex CopyDescriptorUpdateErrors DSUsageBitsErrors DSAspectBitsErrors DSBufferInfoErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>DS Copy Update</td>
+<td>DS copy update with invalid state such as bad object state, mis-matched descriptor types or a bad binding index.</td>
+<td>INVALID_COPY_UPDATE</td>
+<td>vkUpdateDescriptorSets</td>
+<td>InvalidDSUpdateIndex CopyDescriptorUpdateErrors DSUsageBitsErrors DSAspectBitsErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>DS Update Type</td>
+<td>Verifies that structs in DS Update tree are properly created, currently valid, and of the right type</td>
+<td>INVALID_UPDATE_STRUCT</td>
+<td>vkUpdateDescriptorSets</td>
+<td>InvalidDSUpdateStruct</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>MSAA Sample Count</td>
+<td>Verifies that Draw-time, Pipeline, RenderPass, and Subpass sample counts are consistent</td>
+<td>NUM_SAMPLES_MISMATCH</td>
+<td>vkCmdBindPipeline vkCmdBeginRenderPass vkCmdNextSubpass vkCmdBlitImage vkCmdCopyImageToBuffer vkCmdCopyBufferToImage</td>
+<td>NumSamplesMismatch ImageSampleCounts</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Viewport State Binding</td>
+<td>Verify that viewport dynamic state bound to Cmd Buffer at Draw time</td>
+<td>VIEWPORT_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicViewportNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Scissor State Binding</td>
+<td>Verify that scissor dynamic state bound to Cmd Buffer at Draw time</td>
+<td>SCISSOR_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicScissorNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Line Width State Binding</td>
+<td>Verify that line width dynamic state bound to Cmd Buffer at draw time when required</td>
+<td>LINE_WIDTH_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicLineWidthNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Depth Bias State Binding</td>
+<td>Verify that depth bias dynamic state bound when depth enabled</td>
+<td>DEPTH_BIAS_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicDepthBiasNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Blend State Binding</td>
+<td>Verify that blend dynamic state bound when color blend enabled</td>
+<td>BLEND_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicBlendConstantsNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Depth Bounds State Binding</td>
+<td>Verify that depth bounds dynamic state bound when depth enabled</td>
+<td>DEPTH_BOUNDS_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicDepthBoundsNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Stencil State Binding</td>
+<td>Verify that stencil dynamic state bound when depth enabled</td>
+<td>STENCIL_NOT_BOUND</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DynamicStencilReadNotBound DynamicStencilWriteNotBound DynamicStencilRefNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>RenderPass misuse</td>
+<td>Tests for the following: that vkCmdDispatch, vkCmdDispatchIndirect, vkCmdCopyBuffer, vkCmdCopyImage, vkCmdBlitImage, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer, vkCmdUpdateBuffer, vkCmdFillBuffer, vkCmdClearColorImage, vkCmdClearDepthStencilImage, vkCmdResolveImage, vkCmdSetEvent, vkCmdResetEvent, vkCmdResetQueryPool, vkCmdCopyQueryPoolResults, vkCmdBeginRenderPass, vkEndCommandBuffer are not called during an active Renderpass, and that binding compute descriptor sets or pipelines does not take place during an active Renderpass</td>
+<td>INVALID_RENDERPASS_CMD</td>
+<td>vkCmdBindPipeline vkCmdBindDescriptorSets vkCmdDispatch vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage vkCmdSetEvent vkCmdResetEvent vkCmdResetQueryPool vkCmdCopyQueryPoolResults vkCmdBeginRenderPass vkEndCommandBuffer</td>
+<td>RenderPassWithinRenderPass UpdateBufferWithinRenderPass ClearColorImageWithinRenderPass ClearDepthStencilImageWithinRenderPass FillBufferWithinRenderPass EndCommandBufferWithinRenderPass</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Correct use of RenderPass</td>
+<td>Validates that the following rendering commands are issued inside an active RenderPass: vkCmdDraw, vkCmdDrawIndexed, vkCmdDrawIndirect, vkCmdDrawIndexedIndirect, vkCmdClearAttachments, vkCmdNextSubpass, vkCmdEndRenderPass</td>
+<td>NO_ACTIVE_RENDERPASS</td>
+<td>vkCmdBindPipeline vkCmdBindDescriptorSets  vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdClearAttachments vkCmdNextSubpass vkCmdEndRenderPass</td>
+<td>ClearColorAttachmentsOutsideRenderPass</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid RenderPass</td>
+<td>Flag error if attempt made to Begin/End/Continue a NULL or otherwise invalid RenderPass object</td>
+<td>INVALID_RENDERPASS</td>
+<td>vkCmdBeginRenderPass vkCmdEndRenderPass vkBeginCommandBuffer</td>
+<td>NullRenderPass</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>RenderPass Compatibility</td>
+<td>Verify that active renderpass is compatible with renderpass specified in secondary command buffer, and that renderpass specified for a framebuffer is compatible with renderpass specified in secondary command buffer. Also that parameters for BeginRenderpass are compatible with actual renderpass.</td>
+<td>RENDERPASS_INCOMPATIBLE</td>
+<td>vkCmdExecuteCommands vkBeginCommandBuffer vkCmdBeginRenderPass vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>RenderPassClearOpMismatch RenderPassIncompatible FramebufferCreateErrors</td>
+<td>Need to write some more tests to cover all of these cases.</td>
+</tr>
+<tr>
+<td>Framebuffer Compatibility</td>
+<td>If a framebuffer is passed to secondary command buffer in vkBeginCommandBuffer, then it must match active renderpass (if any) at time of vkCmdExecuteCommands</td>
+<td>FRAMEBUFFER_INCOMPATIBLE</td>
+<td>vkCmdExecuteCommands</td>
+<td>FramebufferIncompatible</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Framebuffer Creation</td>
+<td>If a CreateFramebuffer is called with invalide CreateInfo such as attachments with bad mip levelCount or dimensions</td>
+<td>INVALID_FRAMEBUFFER_CREATE_INFO</td>
+<td>vkCreateFramebuffer</td>
+<td>FramebufferCreateErrors</td>
+<td>None</td>
+</tr>
+<tr>
+<td>DescriptorSet Updated</td>
+<td>Warn user if DescriptorSet bound that was never updated and is not empty. Trigger error at draw time if a set being used was never updated.</td>
+<td>DESCRIPTOR_SET_NOT_UPDATED</td>
+<td>vkCmdBindDescriptorSets vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>DescriptorSetCompatibility</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>DescriptorSet Bound</td>
+<td>Error if DescriptorSet not bound that is used by currently bound VkPipeline at draw time</td>
+<td>DESCRIPTOR_SET_NOT_BOUND</td>
+<td>vkCmdBindDescriptorSets</td>
+<td>DescriptorSetNotUpdated</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Dynamic Offset Count</td>
+<td>Error if dynamicOffsetCount at CmdBindDescriptorSets time is not equal to the actual number of dynamic descriptors in all sets being bound.</td>
+<td>INVALID_DYNAMIC_OFFSET_COUNT</td>
+<td>vkCmdBindDescriptorSets</td>
+<td>InvalidDynamicOffsetCases</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Dynamic Offsets</td>
+<td>At draw time, for a *_DYNAMIC type descriptor, the combination of dynamicOffset along with offset and range from its descriptor update must be less than the size of its buffer.</td>
+<td>DYNAMIC_OFFSET_OVERFLOW</td>
+<td>vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect</td>
+<td>InvalidDynamicOffsetCases</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Correct Clear Use</td>
+<td>Warn user if CmdClear for Color or DepthStencil issued to Cmd Buffer prior to a Draw Cmd. RenderPass LOAD_OP_CLEAR is preferred in this case.</td>
+<td>CLEAR_CMD_BEFORE_DRAW</td>
+<td>vkCmdClearColorImage vkCmdClearDepthStencilImage</td>
+<td>ClearCmdNoDraw</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Index Buffer Binding</td>
+<td>Verify that an index buffer is bound at the point when an indexed draw is attempted.</td>
+<td>INDEX_BUFFER_NOT_BOUND</td>
+<td>vkCmdDrawIndexed vkCmdDrawIndexedIndirect</td>
+<td>IndexBufferNotBound</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Viewport and Scissors match</td>
+<td>In PSO viewportCount and scissorCount must match. Also for each count that is non-zero, there corresponding data array ptr should be non-NULL.</td>
+<td>VIEWPORT_SCISSOR_MISMATCH</td>
+<td>vkCreateGraphicsPipelines vkCmdSetViewport vkCmdSetScissor</td>
+<td>PSOViewportStateNotSet PSOViewportScissorCountMismatch PSOViewportCountWithoutDataAndDynScissorMismatch PSOScissorCountWithoutDataAndDynViewportMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Image Aspects for descriptor Updates</td>
+<td>When updating ImageView for Descriptor Sets with layout of DEPTH_STENCIL type, the Image Aspect must not have both the DEPTH and STENCIL aspects set, but must have one of the two set. For COLOR_ATTACHMENT, aspect must have COLOR_BIT set.</td>
+<td>INVALID_IMAGE_ASPECT</td>
+<td>vkUpdateDescriptorSets</td>
+<td>DepthStencilImageViewWithColorAspectBitError</td>
+<td>This test hits Image layer error, but tough to create case that skips that error and gets to VK_LAYER_LUNARG_core_validaton draw state error.</td>
+</tr>
+<tr>
+<td>Valid sampler descriptor Updates</td>
+<td>An invalid sampler is used when updating SAMPLER descriptor.</td>
+<td>SAMPLER_DESCRIPTOR_ERROR</td>
+<td>vkUpdateDescriptorSets</td>
+<td>SampleDescriptorUpdateError</td>
+<td>Currently only making sure sampler handle is known, can add further validation for sampler parameters</td>
+</tr>
+<tr>
+<td>Immutable sampler update consistency</td>
+<td>Within a single write update, all sampler updates must use either immutable samplers or non-immutable samplers, but not a combination of both.</td>
+<td>INCONSISTENT_IMMUTABLE_SAMPLER_UPDATE</td>
+<td>vkUpdateDescriptorSets</td>
+<td>WriteDescriptorSetIntegrityCheck</td>
+<td></td>
+</tr>
+<tr>
+<td>Valid imageView descriptor Updates</td>
+<td>An invalid imageView is used when updating *_IMAGE or *_ATTACHMENT descriptor.</td>
+<td>IMAGEVIEW_DESCRIPTOR_ERROR</td>
+<td>vkUpdateDescriptorSets</td>
+<td>ImageViewDescriptorUpdateError</td>
+<td>Currently only making sure imageView handle is known, can add further validation for imageView and underlying image parameters</td>
+</tr>
+<tr>
+<td>Valid bufferView descriptor Updates</td>
+<td>An invalid bufferView is used when updating *_TEXEL_BUFFER descriptor.</td>
+<td>BUFFERVIEW_DESCRIPTOR_ERROR</td>
+<td>vkUpdateDescriptorSets</td>
+<td>InvalidBufferViewObject</td>
+<td>Currently only making sure bufferView handle is known, can add further validation for bufferView parameters</td>
+</tr>
+<tr>
+<td>Valid bufferInfo descriptor Updates</td>
+<td>An invalid bufferInfo is used when updating <em>_UNIFORM_BUFFER</em> or <em>_STORAGE_BUFFER</em> descriptor.</td>
+<td>BUFFERINFO_DESCRIPTOR_ERROR</td>
+<td>vkUpdateDescriptorSets</td>
+<td>WriteDescriptorSetIntegrityCheck</td>
+<td></td>
+</tr>
+<tr>
+<td>Attachment References in Subpass</td>
+<td>Attachment reference must be present in active subpass</td>
+<td>MISSING_ATTACHMENT_REFERENCE</td>
+<td>vkCmdClearAttachments</td>
+<td>MissingClearAttachment</td>
+<td>Currently only making sure bufferInfo has buffer whose handle is known, can add further validation for bufferInfo parameters</td>
+</tr>
+<tr>
+<td>Verify Image Layouts</td>
+<td>Validate correct image layouts for presents, image transitions, command buffers and renderpasses</td>
+<td>INVALID_IMAGE_LAYOUT</td>
+<td>vkCreateRenderPass vkMapMemory vkQueuePresentKHR vkQueueSubmit vkCmdCopyImage vkCmdCopyImageToBuffer vkCmdWaitEvents VkCmdPipelineBarrier</td>
+<td>InvalidImageLayout MapMemWithoutHostVisibleBit</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Verify Memory Access Flags/Memory Barriers</td>
+<td>Validate correct access flags for memory barriers</td>
+<td>INVALID_BARRIER</td>
+<td>vkCmdWaitEvents vkCmdPipelineBarrier</td>
+<td>InvalidBarriers</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Verify Memory Buffer Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted memory buffer</td>
+<td>INVALID_BUFFER</td>
+<td>vkQueueSubmit</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Verify Image Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted image</td>
+<td>INVALID_IMAGE</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify Query Pool Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted query pool</td>
+<td>INVALID_QUERY_POOL</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify BufferView Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted buffer view</td>
+<td>INVALID_BUFFER_VIEW</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify ImageView Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted image view</td>
+<td>INVALID_IMAGE_VIEW</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify DescriptorPool Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted descriptor pool</td>
+<td>INVALID_DESCRIPTOR_POOL</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify CommandPool Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted command pool</td>
+<td>INVALID_COMMAND_POOL</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify Framebuffer Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted framebuffer</td>
+<td>INVALID_FRAMEBUFFER</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify DeviceMemory Not Deleted</td>
+<td>Validate Command Buffer not submitted with deleted device memory</td>
+<td>INVALID_DEVICE_MEMORY</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write test (or record here if we already have one)</td>
+</tr>
+<tr>
+<td>Verify Memory Buffer Destroy</td>
+<td>Validate memory buffers are not destroyed more than once</td>
+<td>DOUBLE_DESTROY</td>
+<td>vkDestroyBuffer</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Verify Object Not In Use</td>
+<td>Validate that object being freed or modified is not in use</td>
+<td>OBJECT_INUSE</td>
+<td>vkDestroyBuffer vkFreeDescriptorSets vkUpdateDescriptorSets vkDestroySemaphore</td>
+<td>InUseDestroyedSignaled InvalidCmdBufferDescriptorSetImageSamplerDestroyed</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Get Queries</td>
+<td>Validate that queries are properly setup, initialized and synchronized</td>
+<td>INVALID_QUERY</td>
+<td>vkGetFenceStatus vkQueueWaitIdle vkWaitForFences vkDeviceWaitIdle vkCmdBeginQuery vkCmdEndQuery</td>
+<td>InvalidQueueIndexInvalidQuery</td>
+<td>May need to check existing case against object_tracker and remove any redundant checks. Then write tests for remaining case. Currently there are 8 cases for this check with 1 each in cleanInFlightCmdBuffer(), EndCommandBuffer(), CmdEndQuery(), validateQuery(), and 4 cases in GetQueryPoolResults()</td>
+</tr>
+<tr>
+<td>Verify Fences Not In Use</td>
+<td>Validate that fences are not used in multiple submit calls at the same time</td>
+<td>INVALID_FENCE</td>
+<td>vkQueueSubmit</td>
+<td>TODO</td>
+<td>Currently 3 cases of this check to be tested, 1 each in ValidateFenceForSubmit(), DestroyFence(), and ResetFences()</td>
+</tr>
+<tr>
+<td>Verify Events Not In Use</td>
+<td>Validate that events are not used at the time they are destroyed</td>
+<td>INVALID_EVENT</td>
+<td>vkDestroyEvent</td>
+<td>InUseDestroyedSignaled</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Live Semaphore</td>
+<td>When waiting on a semaphore, need to make sure that the semaphore is live and therefore can be signalled, otherwise queue is stalled and cannot make forward progress.</td>
+<td>QUEUE_FORWARD_PROGRESS</td>
+<td>vkQueueSubmit vkQueueBindSparse vkQueuePresentKHR vkAcquireNextImageKHR</td>
+<td>QueueForwardProgressFenceWait</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Buffer Alignment</td>
+<td>Buffer memory offset in BindBufferMemory must agree with VkMemoryRequirements::alignment returned from a call to vkGetBufferMemoryRequirements with buffer</td>
+<td>INVALID_BUFFER_MEMORY_OFFSET</td>
+<td>vkBindBufferMemory</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Texel Buffer Alignment</td>
+<td>Storage/Uniform Texel Buffer memory offset in BindBufferMemory must agree with offset alignment device limit</td>
+<td>INVALID_TEXEL_BUFFER_OFFSET</td>
+<td>vkBindBufferMemory</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Storage Buffer Alignment</td>
+<td>Storage Buffer offsets in BindBufferMemory, BindDescriptorSets must agree with offset alignment device limit</td>
+<td>INVALID_STORAGE_BUFFER_OFFSET</td>
+<td>vkBindBufferMemory vkCmdBindDescriptorSets</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Uniform Buffer Alignment</td>
+<td>Uniform Buffer offsets in BindBufferMemory, BindDescriptorSets must agree with offset alignment device limit</td>
+<td>INVALID_UNIFORM_BUFFER_OFFSET</td>
+<td>vkBindBufferMemory vkCmdBindDescriptorSets</td>
+<td>VertexBufferInvalid</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Independent Blending</td>
+<td>If independent blending is not enabled, all elements of pAttachments must be identical</td>
+<td>INDEPENDENT_BLEND</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>DisabledIndependentBlend</td>
+<td>Create test</td>
+</tr>
+<tr>
+<td>Enabled Logic Operations</td>
+<td>If logic operations is not enabled, logicOpEnable must be VK_FALSE</td>
+<td>DISABLED_LOGIC_OP</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>ColorBlendLogicOpTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>QueueFamilyIndex is Valid</td>
+<td>Validates that QueueFamilyIndices are less an the number of QueueFamilies</td>
+<td>INVALID_QUEUE_INDEX</td>
+<td>vkCmdWaitEvents vkCmdPipelineBarrier vkCreateBuffer vkCreateImage</td>
+<td>InvalidQueueIndexInvalidQuery</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Invalid Queue Family Consistency</td>
+<td>Validates that items created in one Queue Family are not submitted using a different one</td>
+<td>INVALID_QUEUE_FAMILY</td>
+<td>vkCmdExecuteCommands vkQueueSubmit</td>
+<td>MismatchedQueueFamiliesOnSubmit</td>
+<td></td>
+</tr>
+<tr>
+<td>Push Constants</td>
+<td>Validate that the size of push constant ranges and updates does not exceed maxPushConstantSize</td>
+<td>PUSH_CONSTANTS_ERROR</td>
+<td>vkCreatePipelineLayout vkCmdPushConstants</td>
+<td>InvalidPushConstants</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Attachment Image Usage</td>
+<td>Validate that Image attachment location does not conflict with the image's USAGE flags</td>
+<td>INVALID_IMAGE_USAGE</td>
+<td>vkCreateFramebuffer</td>
+<td>FramebufferCreateErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Attachment Image Index</td>
+<td>Validate that Image attachment references are appropriate and not out-of-bounds</td>
+<td>INVALID_ATTACHMENT_INDEX</td>
+<td>vkCreateRenderPass vkCreateFramebuffer</td>
+<td>UnusedPreserveAttachment</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image Transfer Granularity</td>
+<td>Validate that Image Transfer Granularity property settings are respected for image transfers</td>
+<td>IMAGE_TRANSFER_GRANULARITY</td>
+<td>vkCmdCopyImage vkCmdCopyImageToBuffer vkCmdCopyBufferToImage</td>
+<td>DSImageTransferGranularityTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for errors in the layer itself. This does not indicate an app issue, but instead a bug in the layer.</td>
+<td>INTERNAL_ERROR</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used when VK_LAYER_LUNARG_core_validation attempts to allocate memory for its own internal use and is unable to.</td>
+<td>OUT_OF_MEMORY</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Bad subpass indexing</td>
+<td>Must not step beyond last subpass in a renderpass instance, and must reach the last subpass before CmdEndRenderPass.</td>
+<td>INVALID_SUBPASS_INDEX</td>
+<td>vkCmdNextSubpass</td>
+<td>RenderPassExcessiveNextSubpass</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Proper synchronization of acquired images</td>
+<td>vkAcquireNextImageKHR should be called with a valid semaphore and/or fence</td>
+<td>SWAPCHAIN_NO_SYNC_FOR_ACQUIRE</td>
+<td>vkAcquireNextImageKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Swapchain image index too large</td>
+<td>Validates that an image index is within the number of images in a swapchain</td>
+<td>SWAPCHAIN_INVALID_IMAGE</td>
+<td>vkQueuePresentKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Can't present a non-owned image</td>
+<td>Validates that application only presents images that it owns</td>
+<td>SWAPCHAIN_IMAGE_NOT_ACQUIRED</td>
+<td>vkQueuePresentKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Surface already has swapchain</td>
+<td>Cannot create a swapchain for a surface that already has one [other than the swapchain being replaced]</td>
+<td>SWAPCHAIN_ALREADY_EXISTS</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Swapchain replacement</td>
+<td>pCreateInfo-&gt;surface must match pCreateInfo-&gt;oldSwapchain's surface</td>
+<td>SWAPCHAIN_WRONG_SURFACE</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-draw-state-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-draw-state-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Draw State Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-shader-checker-details-table" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-shader-checker-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Shader Checker Details Table</h3>
+
+<p>The Shader Checker portion of the VK_LAYER_LUNARG_core_validation layer inspects the SPIR-V shader images and fixed function pipeline stages at PSO creation time.
+It flags errors when inconsistencies are found across interfaces between shader stages. The exact behavior of the checksdepends on the pair of pipeline stages involved.</p>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM SHADER_CHECKER_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Not consumed</td>
+<td>Flag warning if a location is not consumed (useless work)</td>
+<td>OUTPUT_NOT_CONSUMED</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipeline*NotConsumed</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Not produced</td>
+<td>Flag error if a location is not produced (consumer reads garbage)</td>
+<td>INPUT_NOT_PRODUCED</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipeline*NotProvided</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Type mismatch</td>
+<td>Flag error if a location has inconsistent types</td>
+<td>INTERFACE_TYPE_MISMATCH</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipeline*TypeMismatch</td>
+<td>Between shader stages, an exact structural type match is required. Between VI and VS, or between FS and CB, only the basic component type must match (float for UNORM/SNORM/FLOAT, int for SINT, uint for UINT) as the VI and CB stages perform conversions to the exact format.</td>
+</tr>
+<tr>
+<td>Inconsistent shader</td>
+<td>Flag error if an inconsistent SPIR-V image is detected. Possible cases include broken type definitions which the layer fails to walk.</td>
+<td>INCONSISTENT_SPIRV</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>TODO</td>
+<td>All current tests use the reference compiler to produce valid SPIRV images from GLSL.</td>
+</tr>
+<tr>
+<td>Non-SPIRV shader</td>
+<td>Flag warning if a non-SPIR-V shader image is detected. This can occur if early drivers are ingesting GLSL. VK_LAYER_LUNARG_ShaderChecker cannot analyze non-SPIRV shaders, so this suppresses most other checks.</td>
+<td>NON_SPIRV_SHADER</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>VI Binding Descriptions</td>
+<td>Validate that there is a single vertex input binding description for each binding</td>
+<td>INCONSISTENT_VI</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineAttribBindingConflict</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Shader Stage Check</td>
+<td>Warns if shader stage is unsupported</td>
+<td>UNKNOWN_STAGE</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Shader Specialization</td>
+<td>Error if specialization entry data is not fully contained within the specialization data block.</td>
+<td>BAD_SPECIALIZATION</td>
+<td>vkCreateGraphicsPipelines vkCreateComputePipelines</td>
+<td>CreatePipelineCheckShaderBadSpecialization</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Missing Descriptor</td>
+<td>Flags error if shader attempts to use a descriptor binding not declared in the layout</td>
+<td>MISSING_DESCRIPTOR</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineUniformBlockNotProvided</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Missing Entrypoint</td>
+<td>Flags error if specified entrypoint is not present in the shader module</td>
+<td>MISSING_ENTRYPOINT</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Push constant out of range</td>
+<td>Flags error if a member of a push constant block is not contained within a push constant range specified in the pipeline layout</td>
+<td>PUSH_CONSTANT_OUT_OF_RANGE</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelinePushConstantsNotInLayout</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Push constant not accessible from stage</td>
+<td>Flags error if the push constant range containing a push constant block member is not accessible from the current shader stage.</td>
+<td>PUSH_CONSTANT_NOT_ACCESSIBLE_FROM_STAGE</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineCheckShaderPushConstantNotAccessible</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Descriptor not accessible from stage</td>
+<td>Flags error if a descriptor used by a shader stage does not include that stage in its stageFlags</td>
+<td>DESCRIPTOR_NOT_ACCESSIBLE_FROM_STAGE</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineCheckShaderDescriptorNotAccessible</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Descriptor type mismatch</td>
+<td>Flags error if a descriptor type does not match the shader resource type.</td>
+<td>DESCRIPTOR_TYPE_MISMATCH</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineCheckShaderDescriptorTypeMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Feature not enabled</td>
+<td>Flags error if a capability declared by the shader requires a feature not enabled on the device</td>
+<td>FEATURE_NOT_ENABLED</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineCheckShaderNotEnabled</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Bad capability</td>
+<td>Flags error if a capability declared by the shader is not supported by Vulkan shaders</td>
+<td>BAD_CAPABILITY</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineCheckShaderBadCapability</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Missing input attachment</td>
+<td>Flags error if shader consumes an input attachment which is not provided in the subpass in which a pipeline will be used</td>
+<td>MISSING_INPUT_ATTACHMENT</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineInputAttachment*</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Input attachment type mismatch</td>
+<td>Flags error if shader's declaration of an input attachment has a type inconsistent with the format declared in the renderpass</td>
+<td>INPUT_ATTACHMENT_TYPE_MISMATCH</td>
+<td>vkCreateGraphicsPipelines</td>
+<td>CreatePipelineInputAttachmentTypeMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-shader-checker-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-shader-checker-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Shader Checker Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-memory-tracker-details-table" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-memory-tracker-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Memory Tracker Details Table</h3>
+
+<p>The Mem Tracker portion of the VK_LAYER_LUNARG_core_validation layer tracks memory objects and references and validates that they are managed correctly by the application.  This includes tracking object bindings, memory hazards, and memory object lifetimes. Several other hazard-related issues related to command buffers, fences, and memory mapping are also validated in this layer segment.</p>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM MEMTRACK_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Command Buffer</td>
+<td>Verifies that the command buffer was properly created and is currently valid</td>
+<td>INVALID_CB</td>
+<td>vkCmdBindPipeline vkCmdSetViewport vkCmdSetLineWidth vkCmdSetDepthBias vkCmdSetBlendConstants vkCmdSetDepthBounds vkCmdSetStencilCompareMask vkCmdSetStencilWriteMask vkCmdSetStencilReference vkBeginCommandBuffer vkResetCommandBuffer vkDestroyDevice vkFreeMemory</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Memory Object</td>
+<td>Verifies that the memory object was properly created and is currently valid</td>
+<td>INVALID_MEM_OBJ</td>
+<td>vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage vkFreeMemory vkBindBufferMemory vkBindImageMemory vkQueueBindSparse</td>
+<td>VertexBufferInvalid</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Memory Aliasing</td>
+<td>Flag error if image and/or buffer memory binding ranges overlap</td>
+<td>INVALID_ALIASING</td>
+<td>vkBindBufferMemory vkBindImageMemory</td>
+<td>InvalidMemoryAliasing</td>
+<td>Implement test</td>
+</tr>
+<tr>
+<td>Free Referenced Memory</td>
+<td>Checks to see if memory being freed still has current references</td>
+<td>FREED_MEM_REF</td>
+<td>vmFreeMemory</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Object</td>
+<td>Verifies that the specified Vulkan object was created properly and is currently valid</td>
+<td>INVALID_OBJECT</td>
+<td>vkCmdBindPipeline vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Objects Not Destroyed</td>
+<td>Verify all objects destroyed at DestroyDevice time</td>
+<td>MEMORY_LEAK</td>
+<td>vkDestroyDevice</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Memory Mapping State</td>
+<td>Verifies that mapped memory is CPU-visible</td>
+<td>INVALID_STATE</td>
+<td>vkMapMemory</td>
+<td>MapMemWithoutHostVisibleBit</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Command Buffer Synchronization</td>
+<td>Command Buffer must be complete before BeginCommandBuffer or ResetCommandBuffer can be called</td>
+<td>RESET_CB_WHILE_IN_FLIGHT</td>
+<td>vkBeginCommandBuffer vkResetCommandBuffer</td>
+<td>CallBeginCommandBufferBeforeCompletion CallBeginCommandBufferBeforeCompletion</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Submitted Fence Status</td>
+<td>Verifies that: The fence is not submitted in an already signaled state, that ResetFences is not called with a fence in an unsignaled state, and that fences being checked have been submitted</td>
+<td>INVALID_FENCE_STATE</td>
+<td>vkResetFences vkWaitForFences vkQueueSubmit vkGetFenceStatus</td>
+<td>SubmitSignaledFence ResetUnsignaledFence QueueForwardProgressFenceWait</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Immutable Memory Binding</td>
+<td>Validates that non-sparse memory bindings are immutable, so objects are not re-boundt</td>
+<td>REBIND_OBJECT</td>
+<td>vkBindBufferMemory, vkBindImageMemory</td>
+<td>RebindMemory</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image/Buffer Usage bits</td>
+<td>Verify correct USAGE bits set based on how Images and Buffers are used</td>
+<td>INVALID_USAGE_FLAG</td>
+<td>vkCreateImage, vkCreateBuffer, vkCreateBufferView, vkCmdCopyBuffer, vkCmdCopyQueryPoolResults, vkCmdCopyImage, vkCmdBlitImage, vkCmdCopyBufferToImage, vkCmdCopyImageToBuffer, vkCmdUpdateBuffer, vkCmdFillBuffer</td>
+<td>InvalidUsageBits</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Memory Map Range Checks</td>
+<td>Validates that Memory Mapping Requests are valid for the Memory Object (in-range, not currently mapped on Map, currently mapped on UnMap, size is non-zero)</td>
+<td>INVALID_MAP</td>
+<td>vkMapMemory</td>
+<td>InvalidMemoryMapping</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Memory Type Index Checks</td>
+<td>Validates that specified memory type indices are valid</td>
+<td>INVALID_MEM_TYPE</td>
+<td>vkBindImageMemory vkBindBufferMemory</td>
+<td>TODO</td>
+<td>Need to fix up and re-enable BindImageInvalidMemoryType test as noted in comment in test</td>
+</tr>
+<tr>
+<td>Memory Region Valid</td>
+<td>Verify that a portion of a memory allocation with a bound image or object has valid data.</td>
+<td>INVALID_MEM_REGION</td>
+<td>vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdResolveImage vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdCopyBuffer vkCmdBeginRenderPass vkQueuePresentKHR vkQueueSubmit</td>
+<td>TODO</td>
+<td>Write tests for this case</td>
+</tr>
+<tr>
+<td>Memory Bound To Object Checks</td>
+<td>Validates that memory was bound to image or buffer before use</td>
+<td>OBJECT_NOT_BOUND</td>
+<td>vkCreateImageView vkCreateBufferView vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdResolveImage vkCmdUpdateBuffer vkCmdFillBuffer vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyQueryPoolResults</td>
+<td>CreateBufferViewNoMemoryBoundToBuffer CreateImageViewNoMemoryBoundToImage ImageMemoryNotBound BufferMemoryNotBound</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for errors in the layer itself. This does not indicate an app issue, but instead a bug in the layer.</td>
+<td>INTERNAL_ERROR</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-memory-tracker-pending-work-and-enhancements" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-memory-tracker-pending-work-and-enhancements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Memory Tracker Pending Work and Enhancements</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_core_validation-memory-device-limits-details-table" class="anchor" href="#user-content-vk_layer_lunarg_core_validation-memory-device-limits-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_core_validation Memory Device Limits Details Table</h3>
+
+<p>Each device specifies a set of Device Limits with which the appropriate parameters should comply.  The core_validation layer contains device-limits related checks for which some amount of saved state information is necessary to complete the check.</p>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM DEVLIMITS_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid instance</td>
+<td>If an invalid instance is used, this error will be flagged</td>
+<td>INVALID_INSTANCE</td>
+<td>vkEnumeratePhysicalDevices</td>
+<td>TODO</td>
+<td>VK_LAYER_LUNARG_object_tracker should also catch this so if we made sure VK_LAYER_LUNARG_object_tracker was always on top, we could avoid this check</td>
+</tr>
+<tr>
+<td>Valid physical device</td>
+<td>Enum used for informational messages</td>
+<td>INVALID_PHYSICAL_DEVICE</td>
+<td>vkEnumeratePhysicalDevices</td>
+<td>TODO</td>
+<td>VK_LAYER_LUNARG_object_tracker should also catch this so if we made sure VK_LAYER_LUNARG_object_tracker was always on top, we could avoid this check</td>
+</tr>
+<tr>
+<td>Query count checked</td>
+<td>Signifies that a query call such as vkEnumeratePhysicalDevices or vkGetPhysicalDeviceQueueFamilyProperties has been called without querying the count</td>
+<td>MISSING_QUERY_COUNT</td>
+<td>vkEnumeratePhysicalDevices vkGetPhysicalDeviceQueueFamilyProperties</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Querying array counts</td>
+<td>For API calls where an array count should be queried with an initial call and a NULL array pointer, verify that such a call was made before making a call with non-null array pointer.</td>
+<td>MUST_QUERY_COUNT</td>
+<td>vkEnumeratePhysicalDevices vkGetPhysicalDeviceQueueFamilyProperties</td>
+<td>TODO</td>
+<td>Create focused test</td>
+</tr>
+<tr>
+<td>Array count value</td>
+<td>For API calls where an array of details is queried, verify that the size of the requested array matches the size of the array supported by the device.</td>
+<td>COUNT_MISMATCH</td>
+<td>vkEnumeratePhysicalDevices vkGetPhysicalDeviceQueueFamilyProperties</td>
+<td>MismatchCountQueueCreateRequestedFeature</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Feature Request</td>
+<td>Attempting to vkCreateDevice with a feature that is not supported by the underlying physical device</td>
+<td>INVALID_FEATURE_REQUESTED</td>
+<td>vkCreateDevice</td>
+<td>MismatchCountQueueCreateRequestedFeature</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Queue Creation</td>
+<td>When creating/requesting queues, make sure that QueueFamilyPropertiesIndex and index/count within that queue family are valid.</td>
+<td>INVALID_QUEUE_CREATE_REQUEST</td>
+<td>vkGetDeviceQueue vkCreateDevice</td>
+<td>MismatchCountQueueCreateRequestedFeature</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_parameter_validation" class="anchor" href="#user-content-vk_layer_lunarg_parameter_validation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_parameter_validation</h2>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_parameter_validation-overview" class="anchor" href="#user-content-vk_layer_lunarg_parameter_validation-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_parameter_validation Overview</h3>
+
+<p>The VK_LAYER_LUNARG_parameter_validation layer validates parameter values and flags errors for any values that are not consistent with the valid usage criteria defined for that parameter.</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_parameter_validation-details-table" class="anchor" href="#user-content-vk_layer_lunarg_parameter_validation-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_parameter_validation Details Table</h3>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM *</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Usage</td>
+<td>Verifies that the value of a parameter is consistent with the valid usage criteria defined in the Vulkan specification</td>
+<td>INVALID_USAGE</td>
+<td>vkCmdUpdateBuffer vkCmdFillBuffer</td>
+<td>FillBufferAlignment UpdateBufferAlignment</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid VkStructureType Value</td>
+<td>Verifies that the sType field of a Vulkan structure contains the value expected for a structure of that type</td>
+<td>INVALID_STRUCT_STYPE</td>
+<td></td>
+<td>InvalidStructSType</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Valid Structure pNext Value</td>
+<td>Verifies that the pNext field of a Vulkan structure references a value that is compatible with a structure of that type or is NULL when a structure of that type has no compatible pNext values</td>
+<td>INVALID_STRUCT_PNEXT</td>
+<td></td>
+<td>InvalidStructPNext</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Required Parameter</td>
+<td>Verifies that a required parameter was not specified as 0 or NULL</td>
+<td>REQUIRED_PARAMETER</td>
+<td></td>
+<td>RequiredParameter</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Reserved Parameter</td>
+<td>Verifies that a parameter reserved for future use was specified as 0 or NULL</td>
+<td>RESERVED_PARAMETER</td>
+<td></td>
+<td>ReservedParameter</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Unrecognized Value</td>
+<td>Verifies that a Vulkan enumeration, VkFlags, or VkBool32 parameter contains a value that is recognized as valid for that type</td>
+<td>UNRECOGNIZED_VALUE</td>
+<td></td>
+<td>UnrecognizedValue</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Device Limit Violation</td>
+<td>Verifies that a parameter is within the limits advertised by the gpu</td>
+<td>DEVICE_LIMIT</td>
+<td>vkUpdateDescriptorSets vkCreateRenderPass</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Device Feature Violation</td>
+<td>Verifies that a requested feature is supported by the gpu</td>
+<td>DEVICE_FEATURE</td>
+<td>vkBeginCommandBuffer vkCreateGraphicsPipelines</td>
+<td>PSOPolygonModeInvalid</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Failed Call Return Code</td>
+<td>Provides a description of a failure code returned by a Vulkan API call</td>
+<td>FAILURE_RETURN_CODE</td>
+<td></td>
+<td>FailedReturnValue</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Extension Not Enabled</td>
+<td>Verifies that extension entrypoints are only used when the appropriate extension is enabled</td>
+<td>EXTENSION_NOT_ENABLED</td>
+<td></td>
+<td>VkLayerTest.EnableWsiBeforeUse</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_parameter_validation-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_parameter_validation-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_parameter_validation Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_image" class="anchor" href="#user-content-vk_layer_lunarg_image" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_image</h2>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_image-layer-overview" class="anchor" href="#user-content-vk_layer_lunarg_image-layer-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_image Layer Overview</h3>
+
+<p>The VK_LAYER_LUNARG_image layer is responsible for validating format-related information and enforcing format restrictions.</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_image-layer-details-table" class="anchor" href="#user-content-vk_layer_lunarg_image-layer-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_image Layer Details Table</h3>
+
+<p>DETAILS TABLE PENDING</p>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM IMAGE_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image Format</td>
+<td>Verifies that requested format is a supported Vulkan format on this device</td>
+<td>FORMAT_UNSUPPORTED</td>
+<td>vkCreateImage vkCreateRenderPass</td>
+<td>ImageLayerUnsupportedFormat</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>RenderPass Attachments</td>
+<td>Validates that attachment image format, layouts, loadOps, and storeOps are valid Vulkan values</td>
+<td>RENDERPASS_INVALID_ATTACHMENT</td>
+<td>vkCreateRenderPass</td>
+<td>AttachmentDescriptionUndefinedFormat</td>
+<td>Tests are needed for loadops, storeops, layouts, and bad depth format</td>
+</tr>
+<tr>
+<td>Subpass Depth/Stencil Settings</td>
+<td>Verifies that if there is no depth/stencil attachment then the subpass attachment is set to VK_ATTACHMENT_UNUSED</td>
+<td>RENDERPASS_INVALID_DS_ATTACHMENT</td>
+<td>vkCreateRenderPass</td>
+<td>RenderPassDepthStencilAttachmentUnused</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>View Creation</td>
+<td>Verify that requested Image View Creation parameters are reasonable for the image that the view is being created for</td>
+<td>VIEW_CREATE_ERROR</td>
+<td>vkCreateImageView</td>
+<td>ImageLayerViewTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image Aspects</td>
+<td>Verify that Image commands are using valid Image Aspect flags</td>
+<td>INVALID_IMAGE_ASPECT</td>
+<td>vkCreateImageView vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdClearAttachments vkCmdCopyImage vkCmdCopyImageToBuffer vkCmdCopyBufferToImage vkCmdResolveImage vkCmdBlitImage</td>
+<td>InvalidImageViewAspect</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image Aspect Mismatch</td>
+<td>Verify that Image commands with source and dest images use matching aspect flags</td>
+<td>MISMATCHED_IMAGE_ASPECT</td>
+<td>vkCmdCopyImage</td>
+<td>MiscImageLayerTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image Type Mismatch</td>
+<td>Verify that Image commands with source and dest images use matching types</td>
+<td>MISMATCHED_IMAGE_TYPE</td>
+<td>vkCmdCopyImage vkCmdResolveImage</td>
+<td>ResolveImageTypeMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Image Format Mismatch</td>
+<td>Verify that Image commands with source and dest images use matching formats</td>
+<td>MISMATCHED_IMAGE_FORMAT</td>
+<td>vkCmdCopyImage vkCmdResolveImage</td>
+<td>CopyImageDepthStencilFormatMismatch ResolveImageFormatMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Resolve Sample Count</td>
+<td>Verifies that source and dest images sample counts are valid</td>
+<td>INVALID_RESOLVE_SAMPLES</td>
+<td>vkCmdResolveImage</td>
+<td>ResolveImageHighSampleCount ResolveImageLowSampleCount</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Format</td>
+<td>Verifies the formats are valid for this image operation</td>
+<td>INVALID_FORMAT</td>
+<td>vkCreateImageView vkCmdBlitImage</td>
+<td>ImageLayerViewTests ClearImageErrors</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Correct Image Filter</td>
+<td>Verifies that specified filter is valid</td>
+<td>INVALID_FILTER</td>
+<td>vkCmdBlitImage</td>
+<td>MiscImageLayerTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Correct Image Settings</td>
+<td>Verifies that values are valid for a given resource or subresource</td>
+<td>INVALID_IMAGE_RESOURCE</td>
+<td>vkCmdPipelineBarrier</td>
+<td>MiscImageLayerTests</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Image Format Limits</td>
+<td>Verifies that image creation parameters are with the device format limits</td>
+<td>INVALID_FORMAT_LIMITS_VIOLATION</td>
+<td>vkCreateImage</td>
+<td>ImageFormatLimits</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Layout</td>
+<td>Verifies the layouts are valid for this image operation</td>
+<td>INVALID_LAYOUT</td>
+<td>vkCreateImage vkCmdClearColorImage</td>
+<td>TODO</td>
+<td>ImageFormatLimits</td>
+</tr>
+<tr>
+<td>Verify Image Extents</td>
+<td>Validates that image extent limits are not invalid</td>
+<td>INVALID_EXTENTS</td>
+<td>vkCmdCopyImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer</td>
+<td>MiscImageLayerTests CopyImageLayerCountMismatch</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Verify Usage</td>
+<td>Verifies the image was created with usage valid for this image operation</td>
+<td>INVALID_USAGE</td>
+<td>vkCmdClearColorImage</td>
+<td>TODO</td>
+<td>ClearImageErrors</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_image-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_image-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_image Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_object_tracker" class="anchor" href="#user-content-vk_layer_lunarg_object_tracker" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_object_tracker</h2>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_object_tracker-overview" class="anchor" href="#user-content-vk_layer_lunarg_object_tracker-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_object_tracker Overview</h3>
+
+<p>The VK_LAYER_LUNARG_object_tracker layer maintains a record of all Vulkan objects. It flags errors when invalid objects are used and at DestroyInstance time it flags any objects that were not properly destroyed.</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_object_tracker-details-table" class="anchor" href="#user-content-vk_layer_lunarg_object_tracker-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_object_tracker Details Table</h3>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM OBJTRACK_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Object</td>
+<td>Validates that referenced object was properly created and is currently valid.</td>
+<td>INVALID_OBJECT</td>
+<td>vkAcquireNextImageKHR vkAllocateDescriptorSets vkAllocateMemory vkBeginCommandBuffer vkBindBufferMemory vkBindImageMemory vkCmdBeginQuery vkCmdBeginRenderPass vkCmdBindDescriptorSets vkCmdBindIndexBuffer vkCmdBindPipeline vkCmdBindVertexBuffers vkCmdBlitImage vkCmdClearAttachments vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdCopyBuffer vkCmdCopyBufferToImage vkCmdCopyImage vkCmdCopyImageToBuffer vkCmdCopyQueryPoolResults vkCmdDispatch vkCmdDispatchIndirect vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndexedIndirect vkCmdDrawIndirect vkCmdEndQuery vkCmdEndRenderPass vkCmdExecuteCommands vkCmdFillBuffer vkCmdNextSubpass vkCmdPipelineBarrier vkCmdPushConstants vkCmdResetEvent vkCmdResetQueryPool vkCmdResolveImage vkCmdSetEvent vkCmdUpdateBuffer vkCmdWaitEvents vkCmdWriteTimestamp vkCreateBuffer vkCreateBufferView vkAllocateCommandBuffers vkCreateCommandPool vkCreateComputePipelines vkCreateDescriptorPool vkCreateDescriptorSetLayout vkCreateEvent vkCreateFence vkCreateFramebuffer vkCreateGraphicsPipelines vkCreateImage vkCreateImageView vkCreatePipelineCache vkCreatePipelineLayout vkCreateQueryPool vkCreateRenderPass vkCreateSampler vkCreateSemaphore vkCreateShaderModule vkCreateSwapchainKHR vkDestroyBuffer vkDestroyBufferView vkFreeCommandBuffers vkDestroyCommandPool vkDestroyDescriptorPool vkDestroyDescriptorSetLayout vkDestroyEvent vkDestroyFence vkDestroyFramebuffer vkDestroyImage vkDestroyImageView vkDestroyPipeline vkDestroyPipelineCache vkDestroyPipelineLayout vkDestroyQueryPool vkDestroyRenderPass vkDestroySampler vkDestroySemaphore vkDestroyShaderModule vkDestroySwapchainKHR vkDeviceWaitIdle vkEndCommandBuffer vkEnumeratePhysicalDevices vkFreeDescriptorSets vkFreeMemory vkFreeMemory vkGetBufferMemoryRequirements vkGetDeviceMemoryCommitment vkGetDeviceQueue vkGetEventStatus vkGetFenceStatus vkGetImageMemoryRequirements vkGetImageSparseMemoryRequirements vkGetImageSubresourceLayout vkGetPhysicalDeviceSurfaceSupportKHR vkGetPipelineCacheData vkGetQueryPoolResults vkGetRenderAreaGranularity vkInvalidateMappedMemoryRanges vkMapMemory vkMergePipelineCaches vkQueueBindSparse vkResetCommandBuffer vkResetCommandPool vkResetDescriptorPool vkResetEvent vkResetFences vkSetEvent vkUnmapMemory vkUpdateDescriptorSets vkWaitForFences</td>
+<td>BindInvalidMemory BindMemoryToDestroyedObject PipelineNotBound</td>
+<td>Every VkObject class of parameter will be run through this check. This check may ultimately supersede UNKNOWN_OBJECT</td>
+</tr>
+<tr>
+<td>Objects Leak</td>
+<td>When an Instance or Device object is destroyed, validates that all objects belonging to that device/instance have previously been destroyed</td>
+<td>OBJECT_LEAK</td>
+<td>vkDestroyDevice vkDestroyInstance</td>
+<td>LeakAnObject</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Unknown object</td>
+<td>Internal layer errors when it attempts to update use count for an object that's not in its internal tracking datastructures.</td>
+<td>UNKNOWN_OBJECT</td>
+<td></td>
+<td>CreateUnknownObject</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Correct Command Pool</td>
+<td>Validates that command buffers in a FreeCommandBuffers call were all created in the specified commandPool</td>
+<td>COMMAND_POOL_MISMATCH</td>
+<td>vkFreeCommandBuffers</td>
+<td>InvalidCommandPoolConsistency</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Correct Descriptor Pool</td>
+<td>Validates that descriptor sets in a FreeDescriptorSets call were all created in the specified descriptorPool</td>
+<td>DESCRIPTOR_POOL_MISMATCH</td>
+<td>vkFreeDescriptorSets</td>
+<td>InvalidDescriptorPoolConsistency</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Inconsistent Allocators</td>
+<td>Validates that a custom allocator is either provided for both create and destroy, or neither.</td>
+<td>ALLOCATOR_MISMATCH</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for errors in the layer itself. This does not indicate an app issue, but instead a bug in the layer.</td>
+<td>INTERNAL_ERROR</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_object_tracker-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_object_tracker-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_object_tracker Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h2>
+<a id="user-content-vk_layer_google_threading" class="anchor" href="#user-content-vk_layer_google_threading" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_threading</h2>
+
+<h3>
+<a id="user-content-vk_layer_google_threading-overview" class="anchor" href="#user-content-vk_layer_google_threading-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_threading Overview</h3>
+
+<p>The VK_LAYER_GOOGLE_threading layer checks for simultaneous use of objects by calls from multiple threads.
+Application code is responsible for preventing simultaneous use of the same objects by certain calls that modify objects.
+See <a href="https://cvs.khronos.org/bugzilla/show_bug.cgi?id=13433" TARGET="_blank">bug 13433</a> and
+<a href="https://cvs.khronos.org/svn/repos/oglc/trunk/nextgen/vulkan/function_properties.csv" TARGET="_blank">https://cvs.khronos.org/svn/repos/oglc/trunk/nextgen/vulkan/function_properties.csv</a>
+for threading rules.
+Objects that may need a mutex include VkQueue, VkDeviceMemory, VkObject, VkBuffer, VkImage, VkDescriptorSet, VkDescriptorPool, VkCommandBuffer, and VkSemaphore.
+The most common case is that a VkCommandBuffer passed to VkCmd* calls must be used by only one thread at a time.</p>
+
+<p>In addition to reporting threading rule violations, the layer will enforce a mutex for those calls.
+That can allow an application to continue running without actually crashing due to the reported threading problem.</p>
+
+<p>The layer can only observe when a mutual exclusion rule is actually violated.
+It cannot insure that there is no latent race condition needing mutual exclusion.</p>
+
+<p>The layer can also catch reentrant use of the same object by calls from a single thread.
+That might happen if Vulkan calls are made from a callback function or a signal handler.
+But the layer cannot prevent such a reentrant use of an object.</p>
+
+<p>The layer can only observe when a mutual exclusion rule is actually violated.
+It cannot insure that there is no latent race condition.</p>
+
+<h3>
+<a id="user-content-vk_layer_google_threading-details-table" class="anchor" href="#user-content-vk_layer_google_threading-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_threading Details Table</h3>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM THREADING_CHECKER_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thread Collision</td>
+<td>Detects and notifies user if multiple threads are modifying thes same object</td>
+<td>MULTIPLE_THREADS</td>
+<td>vkQueueSubmit vkFreeMemory vkMapMemory vkUnmapMemory vkFlushMappedMemoryRanges vkInvalidateMappedMemoryRanges vkBindBufferMemory vkBindImageMemory vkQueueBindSparse vkDestroySemaphore vkDestroyBuffer vkDestroyImage vkDestroyDescriptorPool vkResetDescriptorPool vkAllocateDescriptorSets vkFreeDescriptorSets vkFreeCommandBuffers vkBeginCommandBuffer vkEndCommandBuffer vkResetCommandBuffer vkCmdBindPipeline vkCmdBindDescriptorSets vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatch vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdClearAttachments vkCmdResolveImage vkCmdSetEvent vkCmdResetEvent vkCmdWaitEvents vkCmdPipelineBarrier vkCmdBeginQuery vkCmdEndQuery vkCmdResetQueryPool vkCmdWriteTimestamp vkCmdCopyQueryPoolResults vkCmdBeginRenderPass vkCmdNextSubpass vkCmdPushConstants vkCmdEndRenderPass vkCmdExecuteCommands</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>Thread Reentrancy</td>
+<td>Detects cases of a single thread calling Vulkan reentrantly</td>
+<td>SINGLE_THREAD_REUSE</td>
+<td>vkQueueSubmit vkFreeMemory vkMapMemory vkUnmapMemory vkFlushMappedMemoryRanges vkInvalidateMappedMemoryRanges vkBindBufferMemory vkBindImageMemory vkQueueBindSparse vkDestroySemaphore vkDestroyBuffer vkDestroyImage vkDestroyDescriptorPool vkResetDescriptorPool vkAllocateDescriptorSets vkFreeDescriptorSets vkFreeCommandBuffers vkBeginCommandBuffer vkEndCommandBuffer vkResetCommandBuffer vkCmdBindPipeline vkCmdSetViewport vkCmdSetBlendConstants vkCmdSetLineWidth vkCmdSetDepthBias vkCmdSetDepthBounds vkCmdSetStencilCompareMask vkCmdSetStencilWriteMask vkCmdSetStencilReference vkCmdBindDescriptorSets vkCmdBindIndexBuffer vkCmdBindVertexBuffers vkCmdDraw vkCmdDrawIndexed vkCmdDrawIndirect vkCmdDrawIndexedIndirect vkCmdDispatch vkCmdDispatchIndirect vkCmdCopyBuffer vkCmdCopyImage vkCmdBlitImage vkCmdCopyBufferToImage vkCmdCopyImageToBuffer vkCmdUpdateBuffer vkCmdFillBuffer vkCmdClearColorImage vkCmdClearDepthStencilImage vkCmdClearAttachments vkCmdResolveImage vkCmdSetEvent vkCmdResetEvent vkCmdWaitEvents vkCmdPipelineBarrier vkCmdBeginQuery vkCmdEndQuery vkCmdResetQueryPool vkCmdWriteTimestamp vkCmdCopyQueryPoolResults vkCmdBeginRenderPass vkCmdNextSubpass vkCmdPushConstants vkCmdEndRenderPass vkCmdExecuteCommands</td>
+<td>TODO</td>
+<td>NA</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>Enum used for informational messages</td>
+<td>NONE</td>
+<td></td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-vk_layer_google_threading-pending-work" class="anchor" href="#user-content-vk_layer_google_threading-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_threading Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h2>
+<a id="user-content-vk_layer_lunarg_swapchain" class="anchor" href="#user-content-vk_layer_lunarg_swapchain" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_swapchain</h2>
+
+<h3>
+<a id="user-content-swapchain-overview" class="anchor" href="#user-content-swapchain-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Swapchain Overview</h3>
+
+<p>This layer is a work in progress. VK_LAYER_LUNARG_swapchain layer is intended to ...</p>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_swapchain-details-table" class="anchor" href="#user-content-vk_layer_lunarg_swapchain-details-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_swapchain Details Table</h3>
+
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Overview</th>
+<th>ENUM SWAPCHAIN_*</th>
+<th>Relevant API</th>
+<th>Testname</th>
+<th>Notes/TODO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid handle</td>
+<td>If an invalid handle is used, this error will be flagged</td>
+<td>INVALID_HANDLE</td>
+<td>vkCreateDevice vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid pointer</td>
+<td>If a NULL pointer is used, this error will be flagged</td>
+<td>NULL_POINTER</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfacePresentModesKHR vkCreateSwapchainKHR vkGetSwapchainImagesKHR vkAcquireNextImageKHR vkQueuePresentKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Extension enabled before use</td>
+<td>Validates that a WSI extension is enabled before its functions are used</td>
+<td>EXT_NOT_ENABLED_BUT_USED</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfacePresentModesKHR vkCreateSwapchainKHR vkDestroySwapchainKHR vkGetSwapchainImagesKHR vkAcquireNextImageKHR vkQueuePresentKHR</td>
+<td>VkLayerTest.EnableWsiBeforeUse</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Swapchains destroyed before devices</td>
+<td>Validates that  vkDestroySwapchainKHR() is called for all swapchains associated with a device before vkDestroyDevice() is called</td>
+<td>DEL_OBJECT_BEFORE_CHILDREN</td>
+<td>vkDestroyDevice vkDestroySurfaceKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Surface seen to support presentation</td>
+<td>Validates that pCreateInfo-&gt;surface was seen by vkGetPhysicalDeviceSurfaceSupportKHR() to support presentation</td>
+<td>CREATE_UNSUPPORTED_SURFACE</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Queries occur before swapchain creation</td>
+<td>Validates that vkGetPhysicalDeviceSurfaceCapabilitiesKHR(), vkGetPhysicalDeviceSurfaceFormatsKHR() and vkGetPhysicalDeviceSurfacePresentModesKHR() are called before vkCreateSwapchainKHR()</td>
+<td>CREATE_SWAP_WITHOUT_QUERY</td>
+<td>vkCreateSwapchainKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;minImageCount)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;minImageCount)</td>
+<td>CREATE_SWAP_BAD_MIN_IMG_COUNT</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageExtent)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageExtent) when window has no fixed size</td>
+<td>CREATE_SWAP_OUT_OF_BOUNDS_EXTENTS</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageExtent)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageExtent) when window has a fixed size</td>
+<td>CREATE_SWAP_EXTENTS_NO_MATCH_WIN</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;preTransform)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;preTransform)</td>
+<td>CREATE_SWAP_BAD_PRE_TRANSFORM</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;compositeAlpha)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;compositeAlpha)</td>
+<td>CREATE_SWAP_BAD_COMPOSITE_ALPHA</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageArrayLayers)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageArrayLayers)</td>
+<td>CREATE_SWAP_BAD_IMG_ARRAY_LAYERS</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageUsageFlags)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageUsageFlags)</td>
+<td>CREATE_SWAP_BAD_IMG_USAGE_FLAGS</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageColorSpace)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageColorSpace)</td>
+<td>CREATE_SWAP_BAD_IMG_COLOR_SPACE</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageFormat)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageFormat)</td>
+<td>CREATE_SWAP_BAD_IMG_FORMAT</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageFormat and pCreateInfo-&gt;imageColorSpace)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageFormat and pCreateInfo-&gt;imageColorSpace)</td>
+<td>CREATE_SWAP_BAD_IMG_FMT_CLR_SP</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;presentMode)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;presentMode)</td>
+<td>CREATE_SWAP_BAD_PRESENT_MODE</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageSharingMode)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageSharingMode)</td>
+<td>CREATE_SWAP_BAD_SHARING_MODE</td>
+<td>vkCreateSwapchainKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>vkCreateSwapchainKHR(pCreateInfo-&gt;imageSharingMode)</td>
+<td>Validates vkCreateSwapchainKHR(pCreateInfo-&gt;imageSharingMode)</td>
+<td>CREATE_SWAP_BAD_SHARING_VALUES</td>
+<td>vkCreateSwapchainKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Don't acquire too many images</td>
+<td>Validates that app never tries to acquire too many swapchain images at a time</td>
+<td>APP_ACQUIRES_TOO_MANY_IMAGES</td>
+<td>vkAcquireNextImageKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>A VkBool32 must have values of VK_TRUE or VK_FALSE</td>
+<td>Validates that a VkBool32 must have values of VK_TRUE or VK_FALSE</td>
+<td>BAD_BOOL</td>
+<td>vkCreateSwapchainKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pCount must be set by the API before the other pointer is non-NULL</td>
+<td>Validates that app queries for the value of pCount before trying to set it</td>
+<td>PRIOR_COUNT</td>
+<td>vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfacePresentModesKHR vkGetSwapchainImagesKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>pCount must point to same value regardless of whether other pointer is NULL</td>
+<td>Validates that app doesn't change value of pCount returned by a query</td>
+<td>INVALID_COUNT</td>
+<td>vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfacePresentModesKHR vkGetSwapchainImagesKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid sType</td>
+<td>Validates that a struct has correct value for sType</td>
+<td>WRONG_STYPE</td>
+<td>vkCreateSwapchainKHR vkQueuePresentKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid pNext</td>
+<td>Validates that a struct has NULL for the value of pNext</td>
+<td>WRONG_NEXT</td>
+<td>vkCreateSwapchainKHR vkQueuePresentKHR</td>
+<td>VkWsiEnabledLayerTest.TestEnabledWsi</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Non-zero value</td>
+<td>Validates that a required value should be non-zero</td>
+<td>ZERO_VALUE</td>
+<td>vkQueuePresentKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid use of queueFamilyIndex</td>
+<td>Validates that a queueFamilyIndex not used before vkGetPhysicalDeviceQueueFamilyProperties() was called</td>
+<td>DID_NOT_QUERY_QUEUE_FAMILIES</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Valid queueFamilyIndex value</td>
+<td>Validates that a queueFamilyIndex value is less-than pQueueFamilyPropertyCount returned by vkGetPhysicalDeviceQueueFamilyProperties</td>
+<td>QUEUE_FAMILY_INDEX_TOO_LARGE</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Supported combination of queue and surface</td>
+<td>Validates that the surface associated with a swapchain was seen to support the queueFamilyIndex of a given queue</td>
+<td>SURFACE_NOT_SUPPORTED_WITH_QUEUE</td>
+<td>vkQueuePresentKHR</td>
+<td>TODO</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Potential use before query</td>
+<td>Validates that Display Plane Properties are queried before getting supported Display Planes</td>
+<td>GET_SUPPORTED_DISPLAYS_WITHOUT_QUERY</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR</td>
+<td>TODO</td>
+<td>actually: vkGetDisplayPlaneSupportedDisplaysKHR</td>
+</tr>
+<tr>
+<td>Index too large</td>
+<td>Validates index is in range of phys device display plane props</td>
+<td>PLANE_INDEX_TOO_LARGE</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR</td>
+<td>TODO</td>
+<td>actually: vkGetDisplayPlaneSupportedDisplaysKHR</td>
+</tr>
+<tr>
+<td>Index too large</td>
+<td>Validates index is in range of phys device display plane props</td>
+<td>PLANE_INDEX_TOO_LARGE</td>
+<td>vkGetPhysicalDeviceSurfaceSupportKHR</td>
+<td>TODO</td>
+<td>actually: vkGetDisplayPlaneCapabilitiesKHR</td>
+</tr>
+</tbody>
+</table>
+
+<p>Note: The following platform-specific functions are not mentioned above, because they are protected by ifdefs, which cause test failures:</p>
+
+<ul>
+<li>vkCreateAndroidSurfaceKHR</li>
+<li>vkCreateMirSurfaceKHR</li>
+<li>vkGetPhysicalDeviceMirPresentationSupportKHR</li>
+<li>vkCreateWaylandSurfaceKHR</li>
+<li>vkGetPhysicalDeviceWaylandPresentationSupportKHR</li>
+<li>vkCreateWin32SurfaceKHR</li>
+<li>vkGetPhysicalDeviceWin32PresentationSupportKHR</li>
+<li>vkCreateXcbSurfaceKHR</li>
+<li>vkGetPhysicalDeviceXcbPresentationSupportKHR</li>
+<li>vkCreateXlibSurfaceKHR</li>
+<li>vkGetPhysicalDeviceXlibPresentationSupportKHR</li>
+</ul>
+
+<h3>
+<a id="user-content-vk_layer_lunarg_swapchain-pending-work" class="anchor" href="#user-content-vk_layer_lunarg_swapchain-pending-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_LUNARG_Swapchain Pending Work</h3>
+
+<p>See the Khronos github repository for Vulkan-LoaderAndValidationLayers for additional pending issues, or to submit new validation requests</p>
+
+<h2>
+<a id="user-content-vk_layer_google_unique_objects" class="anchor" href="#user-content-vk_layer_google_unique_objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_unique_objects</h2>
+
+<h3>
+<a id="user-content-vk_layer_google_unique_objects-overview" class="anchor" href="#user-content-vk_layer_google_unique_objects-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>VK_LAYER_GOOGLE_unique_objects Overview</h3>
+
+<p>The unique_objects utility layer that assists with validation. The Vulkan specification allows objects to have non-unique handles. This makes tracking object lifetimes difficult in that it is unclear which object is being referenced upon deletion. The unique_objects layer addresses this by aliasing all objects with a unique identifier allowing proper object lifetime tracking. This layer does no validation on its own and may not be required for the proper operation of all layers or all platforms. One sign that it is needed is the appearance of many errors from the object_tracker layer indicating the use of previously destroyed objects. For optimal effectiveness this layer should be loaded last (to reside in the layer chain closest to the display driver and farthest from the application).</p>
+</article>
+</body>
+</html>

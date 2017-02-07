@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="icon" href="vulkan_lunarg_icon.png">
+<link rel="stylesheet" href="github-markdown.css">
+<style>
+    body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+</style>
+</head>
+<body>
+<article class="markdown-body">
+<h1>
+<a id="user-content-vulkan-sdk-for-linux-release-notes" class="anchor" href="#user-content-vulkan-sdk-for-linux-release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vulkan SDK for Linux Release Notes</h1>
+
+<p><a name="user-content-vsdkrel-1.0.39"></a></p>
+
+<p>Note: The Linux build now builds the loader and layers for Xcb, Xlib, Wayland and Mir by default.<br>
+Dependencies for this now include libx11-dev libxcb1-dev libxkbcommon-dev libmirclient-dev libwayland-dev</p>
+
+<p><strong>Important Note about loader:</strong> The release loader binary is built from different source than provided by the SDK package.  The source
+the loader is built from will be made publicly available at some point in the near future.  Because of this,
+the debug loader is still built from the publicly available source and will not exactly match the behavior of the
+release loader.</p>
+
+<p><strong>Linux Loader now searches <code>/usr/local/etc/vulkan</code> and <code>/usr/local/share/vulkan</code> for drivers and layers.</strong>
+These new paths are in addition to the previous locations of <code>/etc/vulkan</code>, <code>/usr/share/vulkan</code>,
+and the user's HOME local path, e.g., <code>$HOME/.local/share/vulkan</code>.
+The two new "/usr/local" locations are configurable at build time, allowing configuration of the loader
+for specific filesystem structures.
+See the <code>BUILD.md</code> guide in the Loader And Validation Layers repository and the "Loader and Layers Interface"
+guide for more information.</p>
+
+<p><strong>Glslang and Driver Issues:</strong> Please see the Known Driver Issues section in this document for information about a compatibility
+issue between glslang and Nvidia drivers.</p>
+
+<h2>
+<a id="user-content-vulkan-sdk-10391-release-notes" class="anchor" href="#user-content-vulkan-sdk-10391-release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vulkan SDK 1.0.39.1 Release Notes</h2>
+
+<h4>
+<a id="user-content-version-10391-for-linux" class="anchor" href="#user-content-version-10391-for-linux" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.0.39.1 for Linux</h4>
+
+<h5>
+<a id="user-content-january-27-2017" class="anchor" href="#user-content-january-27-2017" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>January 27, 2017</h5>
+
+<p>This SDK fixes two bugs from 1.0.39.0:</p>
+
+<ul>
+<li>Fix a problem where vkEnumeratePhysicalDevices would not return correct values in some situations.</li>
+<li>Fix VK_LAYER_GOOGLE_unique_objects outputting warnings whenever a program uses valid extensions from 1.0.39.</li>
+</ul>
+
+<p><strong>NOTE:</strong> Vktrace will be unable to properly trace programs which use extensions that were introduced in 1.0.39.</p>
+
+<h2>
+<a id="user-content-vulkan-sdk-10390-release-notes" class="anchor" href="#user-content-vulkan-sdk-10390-release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vulkan SDK 1.0.39.0 Release Notes</h2>
+
+<h5>
+<a id="user-content-version-10390-for-linux" class="anchor" href="#user-content-version-10390-for-linux" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.0.39.0 for Linux</h5>
+
+<h6>
+<a id="user-content-january-23-2017" class="anchor" href="#user-content-january-23-2017" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>January 23, 2017</h6>
+
+<p>This SDK supports Vulkan API revision 1.0.39.  The prior SDK supported Vulkan API revision 1.0.39.</p>
+
+<p>Please refer to the Getting Started Guide for a list of supported Linux distributions.</p>
+
+<p><strong>Linux SDK now installs itself into a local directory tree!</strong> The installer no longer uses debian packages
+that install files into system directories.  See Getting Started Guide for more information.</p>
+
+<h3>
+<a id="user-content-overview-of-new-features-in-sdk-10390" class="anchor" href="#user-content-overview-of-new-features-in-sdk-10390" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview of new features in SDK 1.0.39.0</h3>
+
+<ul>
+<li>Update loader, parameter validation, and docs to Vulkan version 1.0.39.  This includes the addition of following extensions:
+
+<ul>
+<li>VK_KHR_get_physical_device_properties2</li>
+<li>VK_KHR_shader_draw_parameters</li>
+<li>VK_EXT_direct_mode_display</li>
+<li>VK_EXT_display_surface_counter</li>
+<li>VK_EXT_display_control</li>
+</ul>
+</li>
+<li>Additional Vulkan loader changes:
+
+<ul>
+<li>Loader now handles dynamic device addition/removal</li>
+<li>Expanded logging of loader behavior (using VK_LOADER_DEBUG)</li>
+<li>vkEnumerateInstanceExtensionProperties now filters out unknown instance extensions, since the loader can not support them.</li>
+<li>LoaderAndLayerInterface document has been updated and re-organized.</li>
+<li>Latest loader and ICD interface changes</li>
+<li>New loader and layer interface version negotiation</li>
+<li>Information on how to support unknown physical device extensions (from a layer or ICD)</li>
+</ul>
+</li>
+<li>vktrace has been changed so that the --PMB option defaults to true.</li>
+<li>Improved coverage and utility in layer validation tests</li>
+<li>Scores of bugfixes, new validation checks, and many feature additions</li>
+</ul>
+
+<p>This version of the SDK components are based on the following specifications and source code repositories:</p>
+
+<ul>
+<li><p><a href="https://www.khronos.org/registry/vulkan" TARGET="_blank"><strong>Vulkan Specification including extensions</strong></a></p></li>
+<li><p><a href="https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/tree/sdk-1.0.39" TARGET="_blank"><strong>Vulkan Loader and Validation</strong> version 1.0.39 of vulkan.h</a></p></li>
+<li><p><a href="https://www.khronos.org/registry/spir-v/" TARGET="_blank"><strong>SPIR-V Specification</strong> version 1.1</a></p></li>
+<li><p><a href="https://github.com/KhronosGroup/glslang/commit/807a0d9e2f4e176f75d62ac3c179c81800ec2608" TARGET="_blank"><strong>Glslang library and tools</strong></a></p></li>
+<li><p><a href="https://github.com/KhronosGroup/SPIRV-HEADERS/commit/c470b68225a04965bf87d35e143ae92f831e8110" TARGET="_blank"><strong>SPIR-V headers</strong></a></p></li>
+<li><p><a href="https://github.com/KhronosGroup/SPIRV-Tools/commit/37422e9dba1a3a8cb8028b779dd546d43add6ef8" TARGET="_blank"><strong>SPIR-V tools</strong></a></p></li>
+<li><p><a href="https://github.com/LunarG/VulkanTools/tree/sdk-1.0.39" TARGET="_blank"><strong>Vulkan Tools</strong></a></p></li>
+<li><p><a href="https://github.com/LunarG/VulkanSamples/tree/sdk-1.0.39" TARGET="_blank"><strong>Vulkan Samples</strong></a></p></li>
+</ul>
+
+<h3>
+<a id="user-content-last-commits-are-designated-by-the-following-git-tags-in-the-respective-repositories" class="anchor" href="#user-content-last-commits-are-designated-by-the-following-git-tags-in-the-respective-repositories" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Last Commits are designated by the following Git Tags in the respective repositories:</h3>
+
+<ul>
+<li>LoaderAndValidationLayers:    sdk-1.0.39.1</li>
+<li>VulkanTools:                  sdk-1.0.39.1</li>
+<li>VulkanSamples:                sdk-1.0.39.1</li>
+</ul>
+
+<h3>
+<a id="user-content-fixed-issues" class="anchor" href="#user-content-fixed-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fixed Issues</h3>
+
+<p>Fixed Vulkan-LoaderAndValidationLayers Issues:</p>
+
+<ul>
+<li>Github #1383 Dota2 trace playback doesn't render with Release validation layers</li>
+<li>Github #1368 Loader's EnumeratePhysicalDevices breaks dEQP-VK.api.info.instance.physical_devices</li>
+<li>Github #1342 Incorrect vkCmdDraw[Indexed]IndirectCountAMD object validation</li>
+<li>Github #1330 Cube example uniform buffer update synchronization</li>
+<li>Github #1316 Cube application does not resume after pause</li>
+<li>Github #1311 vkCmdDispatch does not mark target image region as valid anymore</li>
+<li>Github #1292 Redundant error messages when calling vkQueueSubmit on a destroyed buffer.</li>
+<li>Github #1282 Layers: performance warning about unused vertex buffers, but no way to unbind them?</li>
+</ul>
+
+<p>Fixed LunarXchange Issues:</p>
+
+<ul>
+<li>LX #644 Installing the latest SDK will not change the explicit layers paths in the registry, causing incorrect behavior</li>
+<li>LX #635 In the validation layers INFO output for vkCmdDraw, the uses of 0x to indicate a hex value are messed up</li>
+<li>LX #629 Incorrect error produced on Radeon HD 6970 for vkCreateInstance</li>
+</ul>
+
+<p>Fixed VulkanTools/VulkanSamples issues:</p>
+
+<ul>
+<li>Github #144 vktrace: vkFlushMappedMemoryRanges does not handle VK_WHOLE_SIZE</li>
+<li>Github #140 vkCreateRenderPass SIGSEGV</li>
+<li>Github #137 Trace/Replay Linux CMake Warnings</li>
+<li>Github #136 vktrace of Dota2 on Windows does not work.</li>
+<li>Github #131 32-bit VIA cannot detect 64-bit Windows</li>
+<li>Github #127 Via on Linux shows Diskspace for root (“/”) instead of /home</li>
+<li>Github #121 vktrace of Dota2 on Linux does not work.</li>
+</ul>
+
+<h3>
+<a id="user-content-known-issues" class="anchor" href="#user-content-known-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Known Issues</h3>
+
+<ul>
+<li>vktrace sometimes creates a much larger trace file on Linux than on Windows.</li>
+<li>vktrace on some Linux kernels may give an error of "Failed to open pagemap file." when using PMB.
+
+<ul>
+<li>Also, if the kernel is not configured with CONFIG_MEM_SOFT_DIRTY, vktrace will not be able to detect mapped memory changes, and the resulting trace file may not be correct.</li>
+<li>Possible workarounds for these problems are:
+
+<ul>
+<li>Use the --PMB false option</li>
+</ul>
+</li>
+<li>run the command as root to work around the problem.</li>
+<li>See <a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt" TARGET="_blank">https://www.kernel.org/doc/Documentation/vm/pagemap.txt</a> and <a href="https://lwn.net/Articles/642074/">https://lwn.net/Articles/642074/</a> for more info</li>
+</ul>
+</li>
+</ul>
+
+<p>Open Vulkan-LoaderAndValidationLayers Issues:</p>
+
+<ul>
+<li>Github #1377 Trying to clear stencil aspect of a combined depth/stencil image causes validation error, if image view is lacking VK_IMAGE_ASPECT_STENCIL_BIT bit in aspectMask.</li>
+<li>Github #1259 Layers: Resource binding and aliasing checks may be too strict</li>
+<li>Github #1250 Smoketest with validation spews errors on resize (NVIDIA, Linux)</li>
+<li>Github #1225 WSI Swapchain interframe dependency tracking</li>
+<li>Github #1195 "Cannot read invalid region of memory" when using image as resolve, then input attachment</li>
+<li>Github #1187 cube and cubepp crash on resize (linux/AMD)</li>
+<li>Github #1146 READ_BIT in srcAccessMask</li>
+<li>Github #1080 Using the same attachment as a color &amp; input attachment for a subpass triggers questionable warnings</li>
+<li>Github #1048 Cube gets validation errors on resize on AMD</li>
+<li>Github #953 Layers: Update Push Constants Range Checks to Disallow Multiple Ranges in a Single Block</li>
+<li>Github #948 EnumeratePhysicalDevices resets surfaceFormatCount</li>
+<li>Github #945 QueueSubmit checks &amp; side effects not properly separated</li>
+<li>Github #937 AcquireNextImageKHR completion not tied to semaphore &amp; fence</li>
+<li>Github #865 Error when moving exclusive image ownership between queue families with simultaneous image transition</li>
+<li>Github #807 vkSetEvent validation error Code 66: Cannot call vkSetEvent() on event XX that is already in use by a command buffer</li>
+<li>Github #802 Core validation mishandles invalidation of dynamic state when a new pipeline is bound</li>
+<li>Github #743 Loader: Usage of instance-level extension functions leads to stack corruption &amp; a crash under x64 Windows</li>
+<li>Github #731 Validation: shader checker doesn't understand component qualifiers on FS output</li>
+<li>Github #706 Shader Validation and VK_NV_glsl_shader extension</li>
+<li>Github #621 IMAGE: "unsupported format" error may be too strict</li>
+<li>Github #328 Validation layer reports errors if memory object alias same memory</li>
+<li>Github #282 layer_validation_test failures</li>
+<li>Github #281 Cube -- validate with screenshot crashes on AMD/Intel Win 10</li>
+<li>Github #280 Cube resize stops updating image on Win 10 Intel driver</li>
+<li>Github #279 Samples validation errors on AMD driver</li>
+</ul>
+
+<p>Open LunarXchange Issues:</p>
+
+<ul>
+<li>LX #642 - Library location should be outside /bin and/or named per architecture</li>
+<li>LX #634 - VIA Executed from Linux SDK Install Fails If There are Spaces in the Pathname</li>
+<li>LX #632 - VulkanSamples (build &gt; build solution) Errors</li>
+</ul>
+
+<p>Open VulkanTools/VulkanSamples issues:</p>
+
+<ul>
+<li>Github #128 [VulkanTools] Tracing Talos Principle game: game &amp; Steam abort at game startup</li>
+<li>Github #124 [VulkanTools] Segfault and Valgring errrors from smoketest trace replay</li>
+<li>Github #111 [VulkanTools] Problems playing back events sample</li>
+<li>Github #102 [VulkanTools] Problems tracing vkQuake</li>
+<li>Github #95  [VulkanTools] vkreplayer crashed on android</li>
+<li>Github #86  [VulkanTools] gl_vk_bk3d_threaded sample doesn't trace / replay</li>
+<li>Github #78  [VulkanTools] vkreplay crashes when play back vkUpdateDescriptorSets calls</li>
+<li>Github #63  [VulkanTools] Trace captured on ARM platform cannot read by traceviewer32 on Ubuntu64</li>
+</ul>
+
+<h2>
+<a id="user-content-developer-notes" class="anchor" href="#user-content-developer-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Developer Notes</h2>
+
+<ul>
+<li>The pre-compiled glslang static libraries are not compatible with the Linux 4 runtime (e.g., Ubuntu 15.10).  These libraries must be rebuilt before use with the SDK samples.  See the Vulkan Samples page for more information.</li>
+<li>The script source/shaderc/update_shaderc_sources.py fails on Arch Linux because python3 is the default python interpreter. To work around this issue, change the line at the top of the file to be python2.</li>
+</ul>
+
+<h3>
+<a id="user-content-known-driver-issues" class="anchor" href="#user-content-known-driver-issues" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Known Driver Issues</h3>
+
+<ul>
+<li>Update Nvidia Drivers
+
+<ul>
+<li>A recent glslang change exposed a bug in the texel fetch behavior on Nvidia devices under certain situations.</li>
+<li>Nvidia has fixed the issue and posted drivers available with the fix to their download page.</li>
+<li>Nvidia Linux Drivers version 367.35 and newer should include the fix.</li>
+</ul>
+</li>
+</ul>
+</article>
+</body>
+</html>
