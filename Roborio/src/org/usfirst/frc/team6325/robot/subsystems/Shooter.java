@@ -17,6 +17,8 @@ public class Shooter extends Subsystem {
 	CANTalon aim = new CANTalon(RobotMap.shooterAim);
 	CANTalon wheel = new CANTalon(RobotMap.shooterWheel);
 	
+	CANTalon indexer = new CANTalon(RobotMap.shooterIndexer);
+	
 	//should be called when robot first turns on to activate motor controllers
 	public void init(){
 		aim.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
@@ -36,8 +38,20 @@ public class Shooter extends Subsystem {
 		wheel.set(0);
 	}
 	
+	public void startIndexer(){
+		indexer.set(1.0);
+	}
+	
+	public void stopIndexer(){
+		indexer.set(0);
+	}
+	
 	public void setAngle(double angle){
 		aim.set(angle);
+	}
+	
+	public double getAngle(){
+		return aim.get();
 	}
 
 	public void initDefaultCommand() {

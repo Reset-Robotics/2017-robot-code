@@ -30,6 +30,14 @@ public class AutoShooter extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
+		if(Robot.oi.joySecondary.getRawButton(1)){
+			Robot.shooter.startSpinning();
+			Robot.shooter.startIndexer();
+		} else {
+			Robot.shooter.stopSpinning();
+			Robot.shooter.stopIndexer();
+		}
+		
 		if(Robot.oi.joyDriver.getX() > 0.2 || Robot.oi.joyDriver.getY() > 0.02){
 			done = true;
 			return;

@@ -20,6 +20,15 @@ public class ManualShooter extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
+		if(Robot.oi.joySecondary.getRawButton(1)){
+			Robot.shooter.startSpinning();
+			Robot.shooter.startIndexer();
+		} else {
+			Robot.shooter.stopSpinning();
+			Robot.shooter.stopIndexer();
+		}
+		
+		Robot.shooter.setAngle(Robot.shooter.getAngle() + Robot.oi.joyDriver.getY() * 0.1);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()

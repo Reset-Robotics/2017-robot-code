@@ -33,8 +33,9 @@ public class RobotMap {
 	public static int shooterAim = 4;
 	//CAN ID for the shooter's launch wheel controller
 	public static int shooterWheel = 5;
+	public static int shooterIndexer = 6;
 	
-	public static int climber = 6;
+	public static int climber = 7;
 	
 	
 	public static int maxRange = 10;
