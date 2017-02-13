@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class JetsonInterlink extends Subsystem {
 	
 	NetworkTable table = Robot.table;
+	liftTable = NetworkTable.getTable("LiftTracker");
+	Double angleFromGoal = liftTable.getDouble("angleFromGoal", -1.0);
+	Double CenterX = liftTable.getDouble("centerX", -1.0);
+	Double distanceFromTarget = liftTable.putDouble("distanceFromTarget", -1.0);
 	
 	public double getNumber(String key){
 		double num = table.getNumber(key, 0);
