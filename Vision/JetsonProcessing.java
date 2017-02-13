@@ -125,12 +125,14 @@ public class Processing {
 				}
 			}
 		return lengthBetweenContours;
+		table.putNumber("lengthBetweenContours", lengthBetweenContours);
 	}
 	
 	public static double distanceFromTarget(){
 		// distance costant divided by length between centers of contours
 		distanceFromTarget = DISTANCE_CONSTANT / lengthBetweenContours;
 		return distanceFromTarget - OFFSET_TO_FRONT; 
+		table.putNumber("distanceFromTarget", distanceFromTarget - OFFSET_TO_FRONT);
 	}
 	public static double getAngle(){
 		// 8.5in is for the distance from center to center from goal, then divide by lengthBetweenCenters in pixels to get proportion
@@ -152,6 +154,8 @@ public class Processing {
 				}
 			}
 			return angleToGoal;
+			table.putNumber("angleToGoal", angleToGoal);
+		
 	}
 
 }
