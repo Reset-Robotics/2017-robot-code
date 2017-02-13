@@ -51,7 +51,7 @@ public class Processing {
 	public static final double DISTANCE_CONSTANT= 5738;
 	public static final double WIDTH_BETWEEN_TARGET = 8.5;
 	public static boolean shouldRun = true;
-	static NetworkTable table;
+	static NetworkTable liftTable;
 	
 	
 	static double lengthBetweenContours;
@@ -102,9 +102,9 @@ public class Processing {
 			tracker.process(matOriginal);
 			returnCenterX();
 			System.out.println(getAngle());
-			table.putDouble("distanceFromTarget", distanceFromTarget());
-			table.putDouble("angleFromGoal", getAngle());
-			table.putNumberArray("centerX", centerX);
+			liftTable.putDouble("distanceFromTarget", distanceFromTarget());
+			liftTable.putDouble("angleFromGoal", getAngle());
+			liftTable.putNumberArray("centerX", centerX);
 			videoCapture.read(matOriginal);
 		}
 		
@@ -125,14 +125,14 @@ public class Processing {
 				}
 			}
 		return lengthBetweenContours;
-		table.putNumber("lengthBetweenContours", lengthBetweenContours);
+		
 	}
 	
 	public static double distanceFromTarget(){
 		// distance costant divided by length between centers of contours
 		distanceFromTarget = DISTANCE_CONSTANT / lengthBetweenContours;
 		return distanceFromTarget - OFFSET_TO_FRONT; 
-		table.putNumber("distanceFromTarget", distanceFromTarget - OFFSET_TO_FRONT);
+		
 	}
 	public static double getAngle(){
 		// 8.5in is for the distance from center to center from goal, then divide by lengthBetweenCenters in pixels to get proportion
@@ -154,7 +154,7 @@ public class Processing {
 				}
 			}
 			return angleToGoal;
-			table.putNumber("angleToGoal", angleToGoal);
+			
 		
 	}
 
