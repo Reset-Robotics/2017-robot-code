@@ -6,6 +6,17 @@ This repository is the Reset Robotics robot for the official 2017 FIRST Steamwor
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 ### Labels explained
 ##### Bug:
   Something that should not be happening. Self explanatory.
