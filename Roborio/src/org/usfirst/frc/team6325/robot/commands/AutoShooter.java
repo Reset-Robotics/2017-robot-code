@@ -34,8 +34,8 @@ public class AutoShooter extends Command {
 			Robot.shooter.startSpinning();
 			Robot.shooter.startIndexer();
 		} else {
-			Robot.shooter.stopSpinning();
 			Robot.shooter.stopIndexer();
+			Robot.shooter.stopSpinning();
 		}
 		
 		if(Robot.oi.joyDriver.getX() > 0.2 || Robot.oi.joyDriver.getY() > 0.02){
