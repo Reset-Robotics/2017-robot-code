@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team6325.robot.commands.ExampleCommand;
+import org.usfirst.frc.team6325.robot.subsystems.Climber;
 import org.usfirst.frc.team6325.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team6325.robot.subsystems.GearMechanism;
 import org.usfirst.frc.team6325.robot.subsystems.JetsonInterlink;
@@ -29,6 +30,7 @@ public class Robot extends IterativeRobot {
 	public static final MecanumDrive mecanumDrive = new MecanumDrive();
 	public static final GearMechanism gearMechanism = new GearMechanism();
 	public static final Shooter shooter = new Shooter();
+	public static final Climber climber = new Climber();
 	public static final JetsonInterlink jetsonInterlink = new JetsonInterlink();
 	
 	public static OI oi;
