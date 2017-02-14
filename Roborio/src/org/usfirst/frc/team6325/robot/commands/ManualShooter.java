@@ -24,8 +24,8 @@ public class ManualShooter extends Command {
 			Robot.shooter.startSpinning();
 			Robot.shooter.startIndexer();
 		} else {
-			Robot.shooter.stopSpinning();
 			Robot.shooter.stopIndexer();
+			Robot.shooter.stopSpinning();
 		}
 		
 		Robot.shooter.setAngle(Robot.shooter.getAngle() + Robot.oi.joyDriver.getY() * 0.1);
