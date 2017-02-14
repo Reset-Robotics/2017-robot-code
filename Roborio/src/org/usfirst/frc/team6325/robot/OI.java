@@ -40,4 +40,13 @@ public class OI {
 	
 	public Joystick joyDriver = new Joystick(0);
 	public Joystick joySecondary = new Joystick(1);
+	
+	//all code below must be double checked!!!!!!!!
+	/*
+	public Button shooterAuto = new Button(0);
+	shooterAuto.toggleWhenPressed(Command AutoShooter);
+	public Button gearButton = new Button(1);
+	gearButton.whenPressed(Command OpenGear);
+	gearButton.whenReleased(Command CloseGear);
+	*/
 }
