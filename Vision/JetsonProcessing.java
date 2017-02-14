@@ -102,8 +102,8 @@ public class Processing {
 			tracker.process(matOriginal);
 			returnCenterX();
 			System.out.println(getAngle());
-			liftTable.putDouble("distanceFromTarget", distanceFromTarget());
-			liftTable.putDouble("angleFromGoal", getAngle());
+			liftTable.putNumber("distanceFromTarget", distanceFromTarget());
+			liftTable.putNumber("angleFromGoal", getAngle());
 			liftTable.putNumberArray("centerX", centerX);
 			videoCapture.read(matOriginal);
 		}
