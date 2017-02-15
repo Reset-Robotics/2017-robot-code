@@ -44,9 +44,9 @@ public class OI {
 	//all code below must be double checked!!!!!!!!
 	/*
 	public Button shooterAuto = new Button(0);
-	shooterAuto.toggleWhenPressed(Command AutoShooter);
+	shooterAuto.toggleWhenPressed(new AutoShooter());
 	public Button gearButton = new Button(1);
-	gearButton.whenPressed(Command OpenGear);
-	gearButton.whenReleased(Command CloseGear);
+	gearButton.whenPressed(new OpenGear());
+	gearButton.whenReleased(new CloseGear());
 	*/
 }
