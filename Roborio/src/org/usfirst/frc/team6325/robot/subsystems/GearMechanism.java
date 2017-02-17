@@ -23,6 +23,10 @@ public class GearMechanism extends Subsystem {
 		piston.set(DoubleSolenoid.Value.kReverse);
 	}
 	
+	public double getValue() {
+		return piston.get();
+	}
+	
 	public void initDefaultCommand() {
 
 		// setDefaultCommand(new MySpecialCommand());
