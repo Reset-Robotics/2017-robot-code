@@ -29,6 +29,13 @@ public class SmartDashboard extends Subsystem {
                 SmartDashboard.putData(Climber);
         }
         
+        public void shooterAngle() {
+                SmartDashboard.putNumber("Shooter Angle", Shooter.getAngle());
+        }
+        public void pistonPosition() {
+                SmartDashboard.putNumber("Gear Piston Position", GearMechanism.getValue());
+        }
+        
         public void initDefaultCommand() {
         }
 }
