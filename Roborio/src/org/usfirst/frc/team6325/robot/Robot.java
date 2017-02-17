@@ -50,8 +50,11 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
+		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(); //http://roborio-6325-frc.local:1181/?action=stream
+		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1182/?action=stream
+		UsbCamera camera3 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1183/?action=stream
 		
-		table = NetworkTable.getTable("table");
+		table = NetworkTable.getTable("LiftTracker");
 	}
 
 	/**
