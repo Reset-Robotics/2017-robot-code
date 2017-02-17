@@ -64,6 +64,26 @@ public class MecanumDrive extends Subsystem {
 		}
 	}
 	
+	public void getFrontLeftSpeed() {
+		double speed = (Robot.oi.joyDriver.getX()+Robot.oi.joyDriver.getY()+Robot.oi.joyDriver.getTwist())*0.5;
+		return Math.min(Math.max(speed, -1.0), 1.0);
+	}
+	
+	public void getFrontRightSpeed() {
+		double speed = -(Robot.oi.joyDriver.getX()-Robot.oi.joyDriver.getY()-Robot.oi.joyDriver.getTwist())*0.5;
+		return Math.min(Math.max(speed, -1.0), 1.0);
+	}
+	
+	public void getBackLeftSpeed() {
+		double speed = (Robot.oi.joyDriver.getX()-Robot.oi.joyDriver.getY()+Robot.oi.joyDriver.getTwist())*0.5;
+		return Math.min(Math.max(speed, -1.0), 1.0);
+	}
+	
+	public void getBackRightSpeed() {
+		double speed = -(Robot.oi.joyDriver.getX()+Robot.oi.joyDriver.getY()-Robot.oi.joyDriver.getTwist())*0.5;
+		return Math.min(Math.max(speed, -1.0), 1.0);
+	}
+	
 	@Override
 	protected void initDefaultCommand() {
 		// TODO Auto-generated method stub
