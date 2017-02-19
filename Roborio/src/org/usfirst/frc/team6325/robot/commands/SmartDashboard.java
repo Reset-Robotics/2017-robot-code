@@ -14,16 +14,7 @@ public class SmartDashboard extends Command {
         
         @Override
         protected void execute() {
-                Robot.SmartDashboard.frontLeftSpeed();
-                Robot.SmartDashboard.frontRightSpeed();
-                Robot.SmartDashboard.backLeftSpeed();
-                Robot.SmartDashboard.backRightSpeed();
-                Robot.SmartDashboard.mecanumDriveCommands();
-                Robot.SmartDashboard.gearMechanismCommands();
-                Robot.SmartDashboard.shooterCommands();
-                Robot.SmartDashboard.climberCommands();
-                Robot.SmartDashboard.shooterAngle();
-                Robot.SmartDashboard.pistonPosition();
+                Robot.SmartDashboard.displaySmartDashboard();
         }
         
         @Override
