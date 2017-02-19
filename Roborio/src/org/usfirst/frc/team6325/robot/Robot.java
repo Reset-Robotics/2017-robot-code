@@ -55,7 +55,12 @@ public class Robot extends IterativeRobot {
 		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1182/?action=stream
 		UsbCamera camera3 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1183/?action=stream
 		UsbCamera camera4 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1184/?action=stream
-		camera1.setResolution(640, 480);
+		camera0.setResolution(640, 480); // Jetson Gears
+		camera2.setResolution(640, 480); // Jetson Balls
+		// set exposure for vision cameras
+		camera3.setResolution(640, 480); // Roborio 1
+		camera4.setResolution(640, 480); // Roborio 2
+		
 		table = NetworkTable.getTable("LiftTracker");
 	}
 
