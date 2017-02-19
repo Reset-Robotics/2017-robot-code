@@ -1,7 +1,8 @@
 /*
  * VisionMethods.h
  */
-#include "Commands/GripPipeline.h"
+//#include "Commands/LiftTracker.h"
+#include "LiftTracker.h"
 #include "RobotConstants.h" //If you don't know what some variables are, they were probably defined in here
 #include <string>
 #include <vector>
