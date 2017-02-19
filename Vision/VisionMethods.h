@@ -2,7 +2,7 @@
  * VisionMethods.h
  */
 //#include "Commands/LiftTracker.h"
-#include "LiftTracker.h"
+#include "liftTracker.h"
 #include "RobotConstants.h" //If you don't know what some variables are, they were probably defined in here
 #include <string>
 #include <vector>
@@ -16,8 +16,11 @@ std::vector<std::vector<cv::Point>> filteredContours(int cameranum) {
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, IMG_WIDTH);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, IMG_HEIGHT);
 	bool bSuccess = cap.read(frame);
-	grip::GripPipeline gp;
-	return gp.GripPipeline::process(frame);
+	//grip::GripPipeline gp;
+	//return gp.GripPipeline::process(frame);
+	grip::liftTracker tracker;
+	return tracker.liftTracker::process(frame);
+
 }
 
 double distFromHighGoal() { //Find distance from the center of the boiler, in inches.
