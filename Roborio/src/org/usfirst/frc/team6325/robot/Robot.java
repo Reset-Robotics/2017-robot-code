@@ -51,9 +51,10 @@ public class Robot extends IterativeRobot {
 		chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(); //http://roborio-6325-frc.local:1181/?action=stream
+		UsbCamera camera0  = CameraServer.getInstance().startAutomaticCapture(); //http://roborio-6325-frc.local:1181/?action=stream
 		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1182/?action=stream
 		UsbCamera camera3 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1183/?action=stream
+		UsbCamera camera4 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1184/?action=stream
 		camera1.setResolution(640, 480);
 		table = NetworkTable.getTable("LiftTracker");
 	}
@@ -124,6 +125,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		if (joystick.getRawButton(0)) {
+			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera3.getName());
+		} else if (joystick.getRawButton(1)) {
+			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera4.getName());
+		}
 	}
 
 	/**
