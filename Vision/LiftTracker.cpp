@@ -17,9 +17,9 @@ void LiftTracker::Process(cv::Mat& source0){
 	//Step HSV_Threshold0:
 	//input
 	cv::Mat hsvThresholdInput = blurOutput;
-	double hsvThresholdHue[] = {0.0, 111.0323574730354};
-	double hsvThresholdSaturation[] = {0.0, 118.63636363636364};
-	double hsvThresholdValue[] = {245.3954802259887, 255.0};
+	double hsvThresholdHue[] = {133.89830508474574, 180.0};
+	double hsvThresholdSaturation[] = {0.0, 60.58510638297872};
+	double hsvThresholdValue[] = {230.50847457627117, 255.0};
 	hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
 	//Step CV_erode0:
 	//input
