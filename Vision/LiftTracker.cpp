@@ -11,13 +11,14 @@ void LiftTracker::Process(cv::Mat& source0){
 	//Step Blur0:
 	//input
 	cv::Mat blurInput = source0;
-	BlurType blurType = BlurType::BOX;
+	//BlurType blurType = BlurType::BOX;
 	double blurRadius = 5.538085255066387;  // default Double
+	BlurType blurType = BOX;
 	blur(blurInput, blurType, blurRadius, this->blurOutput);
 	//Step HSV_Threshold0:
 	//input
 	cv::Mat hsvThresholdInput = blurOutput;
-	double hsvThresholdHue[] = {133.89830508474574, 180.0};
+	double hsvThresholdHue[] = {133.89830508474574, 255.0};
 	double hsvThresholdSaturation[] = {0.0, 60.58510638297872};
 	double hsvThresholdValue[] = {230.50847457627117, 255.0};
 	hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, this->hsvThresholdOutput);
@@ -199,4 +200,5 @@ std::vector<std::vector<cv::Point> >* LiftTracker::GetFilterContoursOutput(){
 
 
 } // end grip namespace
+
 

@@ -15,8 +15,8 @@ constexpr int targetHeight4FeetFromGearPeg = 121;
 constexpr double cameraWidth2Feet = 29.9375;
 constexpr double pi = 3.1415926535898;
 constexpr double radiansPerSec = 7.0; //Just a guess. The number of radians
-									  //the robot can turn a second by doing
-									  //drivetrain->set(1.0,-1.0) or vice versa
+//the robot can turn a second by doing
+//drivetrain->set(1.0,-1.0) or vice versa
 constexpr int bestDistFromHighGoal = 36; //this value may be off
 constexpr double robotSpeed = 120; //inches per second, may be off
 
