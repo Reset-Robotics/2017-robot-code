@@ -15,26 +15,28 @@ public class Autonomous extends Command {
         boolean done = false;
         if(pos == -1) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            // wait 1 second
-            //turn 60 degrees right
+            Timer.delay(1);
+            Robot.mecanumDrive.cartesiandrive(0, 0, 0.5, 1);
+			Timer.delay(1.5);
             while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
         }
         if(pos == 1) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            // wait 1 second
-            //turn 60 degrees left
+            Timer.delay(1);
+            Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
+			Timer.delay(1.5)
             while(centerbetweentapesx > centerx) {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
         while(distancebetweentapes < certainamount) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            if(centerbetweentapesx < centerx) {
+            while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
-            if(centerbetweentapesx > centerx) {
+            while(centerbetweentapesx > centerx) {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
@@ -43,6 +45,9 @@ public class Autonomous extends Command {
         while(centerbetweentapesx < wherecenterissupposedright) {
             Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
         }
+		Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
+		Timer.delay(1);
+		Robot.mecanumDrive.killMotors();
         Robot.GearMechanism.close();
         done = true;
 	}
