@@ -1,15 +1,15 @@
 /*
  * VisionMethods.h
  */
-/*#include "liftTracker.h"
-//#include "RobotConstants.h" //If you don't know what some variables are, they were probably defined in here
+#include "liftTracker.h"
+#include "RobotConstants.h" //If you don't know what some variables are, they were probably defined in here
 #include <string>
 #include <vector>
 #ifndef SRC_VISIONMETHODS_H_
 #define SRC_VISIONMETHODS_H_
 
 
-std::vector<std::vector<cv::Point>> filteredContours(int cameranum) {
+/*std::vector<std::vector<cv::Point>> filteredContours(int cameranum) {
 	cv::Mat frame;
 	cv::VideoCapture cap(cameranum);
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, IMG_WIDTH);
@@ -17,7 +17,7 @@ std::vector<std::vector<cv::Point>> filteredContours(int cameranum) {
 	bool bSuccess = cap.read(frame);
 	grip::liftTracker gp;
 	return grip::LiftTracker::process(frame);
-}
+}*/
 
 double distFromHighGoal() { //Find distance from the center of the boiler, in inches.
 	int maxArea = 0;
@@ -84,4 +84,4 @@ std::string initialOrientation() {
 	if(score==0) {return "middle";}
 	else if(score<0) {return "right";}
 	else {return "left";}
-} */
+}

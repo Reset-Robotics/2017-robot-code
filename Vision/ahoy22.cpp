@@ -16,9 +16,7 @@
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d.hpp"
-#include "RobotConstants.h"
-#include "VisionMethods.h"
-
+#include "ahoy.h"
 
 //Variables
 using namespace cv;
@@ -26,28 +24,57 @@ using namespace std;
 
 //Materials
 Mat imgOriginal;
-Mat imgHSV;
 Mat imgThresholded;
-
+Mat dst;
+//threshholds
+int edgeThresh = 1;
+int lowThreshold;
+int const max_lowThreshold = 100;
+int kernel_size = 3;
 //Camera id
 int activeCamera = 0;
 
 //Hue Values
-double iLowH = 133.89830508474574;
-double iHighH = 180.0;
+int iLowH = 17;
+int iHighH = 137;
 //Saturation Values
-double iLowS = 0;
-double iHighS = 60.58510638297872;
+int iLowS = 0;
+int iHighS = 113;
 //Value Values
-double iLowV = 230.50847457627117;
-double iHighV = 255;
+int iLowV = 222;
+int iHighV = 255;
 
-double hsvThresholdHue[] = {133.89830508474574, 180.0};
-double hsvThresholdSaturation[] = {0.0, 60.58510638297872};
-double hsvThresholdValue[] = {230.50847457627117, 255.0};
 
 
 //Main
+//CannyThreshold Functions with ration of 1:3
+void CannyThreshold(int, void*)
+{
+  cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+
+  inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded); //Threshold the image
+
+  //morphological opening (remove small objects from the foreground)
+  erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+  dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+  //morphological closing (fill small holes in the foreground)
+  dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+  erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+
+  /// Reduce noise with a kernel 3x3
+  blur(imgThresholded, detected_edges, Size(3,3));
+
+  /// Canny detector
+  Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*3, 3);
+
+  /// Using Canny's output as a mask, we display our result
+  dst = Scalar::all(0);
+
+  imgThresholded.copyTo(dst, detected_edges);
+  imshow("Edge Map", detected_edges);
+}
+
 int main(int argc, char** argv)
 {
   namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
@@ -65,7 +92,17 @@ int main(int argc, char** argv)
 
   cvCreateTrackbar("Active Camera ", "Control", &activeCamera, 4); //Set active camera id (0 - 4); 1 is not assigned to a camera
 
-  //VideoCapture cap(0);
+  VideoCapture cap(0);
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, IMG_WIDTH);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, IMG_HEIGHT);
+
+  distFromHighGoal();
+
+  if (!cap.isOpened())  // if not success, exit program
+  {
+     cout << "Cannot open the web cam" << endl;
+     return -1;
+  }
 
   while (true)
   {
@@ -89,9 +126,21 @@ int main(int argc, char** argv)
        dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
        erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
-
-
        imshow("Thresholded Image", imgThresholded); //show the thresholded image
        imshow("Original", imgOriginal); //show the original image
+
+       /// Show the canny image
+       CannyThreshold(0,0);
+
+
+
+       //output distFromHighGoal value.
+
+       if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+       {
+           cout << "esc key is pressed by user" << endl;
+           break;
+       }
     }
+    return 0;
   }

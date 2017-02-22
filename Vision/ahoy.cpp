@@ -14,15 +14,14 @@
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d.hpp"
+#include "ahoy.h"
 
 //Variables
 using namespace cv;
 using namespace std;
 //Materials
 Mat dst;
-Mat detected_edges;
 Mat imgOriginal;
-Mat imgHSV;
 Mat imgThresholded;
 //threshholds
 int edgeThresh = 1;
