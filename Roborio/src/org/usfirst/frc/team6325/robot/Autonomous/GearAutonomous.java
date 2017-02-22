@@ -13,12 +13,13 @@ public class Autonomous extends Command {
 
 	protected void initialize() {
         int pos = 0; // position of robot at start of match: -1, 0, 1
+		boolean isred = true;
         boolean done = false;
         if(pos == -1) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
             Timer.delay(1);
             Robot.mecanumDrive.cartesiandrive(0, 0, 0.5, 1);
-			Timer.delay(1.5);
+		Timer.delay(1.5);
             while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
@@ -51,7 +52,7 @@ public class Autonomous extends Command {
 	Timer.delay(1);
 	Robot.mecanumDrive.killMotors();
     Robot.GearMechanism.close();
-	if(pos == -1)
+	if((isred && pos == -1) || (!isred && pos == 1))
 	{
 		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1);
 		Timer.delay(1);
@@ -67,7 +68,7 @@ public class Autonomous extends Command {
 		Time.delay(2);
 		Robot.mecanumDrive.killMotors();
 	}
-	if(pos == 1)
+	if((isred && pos == 1) || (!isred && pos == -1))
 	{
 		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
 		Timer.delay(1);
