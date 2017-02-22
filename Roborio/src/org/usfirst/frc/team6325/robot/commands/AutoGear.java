@@ -22,7 +22,10 @@ public class AutoGear extends Command {
 	@Override
 	protected void initialize() 
 	{
-		
+		public static NetworkTable table;
+		table = NetworkTable.getTable("LiftTracker");
+		currentDistancetoPeg = table.GetNumber("currentDistancetoPeg",currentDistanceToPeg) 
+		double neededDistancetoPeg;
 	}
 
 	// Called repeatedly when this Command is scheduled to run
