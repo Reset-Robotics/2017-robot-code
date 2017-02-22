@@ -132,11 +132,17 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		if (joystick.getRawButton(0)) {
+		if (Robot.oi.joySecondary.getRawButton(0)) {
 			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera3.getName());
-		} else if (joystick.getRawButton(1)) {
+		} else if (Robot.oi.joySecondary.getRawButton(1)) {
 			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera4.getName());
+		} else if (Robot.oi.joySecondary.getRawButton(2)) {
+			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
+		} else if (Robot.oi.joySecondary.getRawButton(3)) {
+			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
 		}
+			
+	
 	}
 
 	/**
