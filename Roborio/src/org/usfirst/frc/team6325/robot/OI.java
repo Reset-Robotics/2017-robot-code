@@ -43,11 +43,9 @@ public class OI {
 	
 	//all code below must be double checked!!!!!!!!
 	
-	public Button shooterAuto = new Button(0);
-	shooterAuto.toggleWhenPressed(new AutoShooter());
-	public Button gearButton = new Button(1);
+	Button shooterAuto = new JoystickButton (joySecondary,0);
+	shooterAuto.whenPressed(new AutoShooter());
+	Button gearButton = new JoystickButton(joySecondary,1);
 	gearButton.whenPressed(new OpenGear());
 	gearButton.whenReleased(new CloseGear());
-	public Button autoGearButton = new Button(2);
-	autoGearButton.whenPressed = (new AutoGear());
 }
