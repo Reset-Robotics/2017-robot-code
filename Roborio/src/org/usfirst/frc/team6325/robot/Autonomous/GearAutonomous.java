@@ -8,44 +8,91 @@ public class Autonomous extends Command {
     public GearAutonomous() {
         requires(Robot.mecanumDrive);
         requires(Robot.GearMechanism);
+	requires(Robot.AutoShooter);
     }
 
 	protected void initialize() {
         int pos = 0; // position of robot at start of match: -1, 0, 1
+		boolean isred = true;
         boolean done = false;
         if(pos == -1) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            // wait 1 second
-            //turn 60 degrees right
+            Timer.delay(1);
+            Robot.mecanumDrive.cartesiandrive(0, 0, 0.5, 1);
+		Timer.delay(1.5);
             while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
         }
         if(pos == 1) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            // wait 1 second
-            //turn 60 degrees left
+            Timer.delay(1);
+            Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
+			Timer.delay(1.5)
             while(centerbetweentapesx > centerx) {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
         while(distancebetweentapes < certainamount) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
-            if(centerbetweentapesx < centerx) {
+            while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
-            if(centerbetweentapesx > centerx) {
+            while(centerbetweentapesx > centerx) {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
         Robot.mecanumDrive.killMotors();
         Robot.GearMechanism.open();
-        while(centerbetweentapesx < wherecenterissupposedright) {
+        while(centerbetweentapesx < wherecenterissupposedright) 
+		{
             Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
         }
-        Robot.GearMechanism.close();
-        done = true;
+	Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
+	Timer.delay(1);
+	Robot.mecanumDrive.killMotors();
+    Robot.GearMechanism.close();
+	if((isred && pos == -1) || (!isred && pos == 1))
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1);
+		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Timer.delay(3);
+		Robot.mecanumDrive.killMotors();
 	}
+	if(pos == 0)
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1);
+		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Time.delay(2);
+		Robot.mecanumDrive.killMotors();
+	}
+	if((isred && pos == 1) || (!isred && pos == -1))
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
+		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Time.delay(2);
+		Robot.mecanumDrive.killMotors();
+	}
+	while(tapecenterx > centerx) {
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1); //turn right
+		Timer.delay(0.2);
+		Robot.mecanumDrive.killMotors();
+	}
+	while(tapecenterx < centerx) {
+		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1); //turn left
+		Timer.delay(0.2);
+		Robot.mecanumDrive.killMotors();
+	}
+	Robot.shooter.setAngle(/*do calculations on tape thickness to turn into angle*/);
+	Robot.shooter.startSpinning();
+	Robot.shooter.startIndexer();
+	Timer.delay(3);
+	Robot.shooter.stopIndexer();
+	Robot.shooter.stopSpinning();
+	done = true;
 
 	// Called repeatedly when this Command is scheduled to run
 	@Override
