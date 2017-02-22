@@ -97,6 +97,41 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT, IMG_HEIGHT);
 
   distFromHighGoal();
+  /* This is java. 
+   public static double returnCenterX(){
+		double[] defaultValue = new double[0];
+			// This is the center value returned by GRIP thank WPI
+			if(!tracker.filterContoursOutput.isEmpty() && tracker.filterContoursOutput.size() >= 2){ // checks if there are contours and there are at least 2
+				Rect r = Imgproc.boundingRect(tracker.filterContoursOutput.get(1)); // change this to contour map
+				Rect r1 = Imgproc.boundingRect(tracker.filterContoursOutput.get(0)); // contour map as well
+        height = boundingRect(tracker.filterContoursOutput.get(0)).height;
+				centerX = new double[]{r1.x + (r1.width / 2), r.x + (r.width / 2)};
+				Imgcodecs.imwrite("output.png", matOriginal);
+				//System.out.println(centerX.length); //testing
+				// this again checks for the 2 shapes on the target
+				if(centerX.length == 2){
+					// subtracts one another to get length in pixels
+					lengthBetweenContours = Math.abs(centerX[0] - centerX[1]);
+				}
+			}
+		return lengthBetweenContours;
+		
+	} */
+  /* This is C++
+  double distFromGearPeg() { //Find distance from the gear peg, in inches.
+	int maxArea = 0;
+	double bestHeight = 0.0;
+	std::vector<std::vector<cv::Point>> contours = filteredContours(cameraPortLow);
+	for(int c=0;c<contours.size();c++) {
+		if(contourArea(contours[c])>maxArea) { // checks if there is contours
+			maxArea=contourArea(contours[c]);
+			bestHeight = boundingRect(contours[c]).height; // height is important part. // we could probably use this in above method.
+		}
+	}
+	//Pixel height and distance are inversely proportional
+	return 48.0*bestHeight/targetHeight4FeetFromGearPeg;
+} */
+
 
   if (!cap.isOpened())  // if not success, exit program
   {
