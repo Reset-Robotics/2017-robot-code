@@ -86,7 +86,7 @@ public class Autonomous extends Command {
 		Timer.delay(0.2);
 		Robot.mecanumDrive.killMotors();
 	}
-	Robot.shooter.setAngle(/*do calculations on tape thickness to turn into angle*/);
+	Robot.shooter.setAngle(/*do calculations on distance from goal to turn into angle*/);
 	Robot.shooter.startSpinning();
 	Robot.shooter.startIndexer();
 	Timer.delay(3);
