@@ -42,15 +42,34 @@ public class Autonomous extends Command {
         }
         Robot.mecanumDrive.killMotors();
         Robot.GearMechanism.open();
-        while(centerbetweentapesx < wherecenterissupposedright) {
+        while(centerbetweentapesx < wherecenterissupposedright) 
+		{
             Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
         }
-		Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
+	Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
+	Timer.delay(1);
+	Robot.mecanumDrive.killMotors();
+    Robot.GearMechanism.close();
+	if(pos == -1)
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1);
 		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Timer.delay(3);
 		Robot.mecanumDrive.killMotors();
-        Robot.GearMechanism.close();
+	}
+	if(pos == 0)
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1);
+		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Time.delay(2);
+		Robot.mecanumDrive.killMotors();
+	}
         done = true;
 	}
+		
+			
 
 	// Called repeatedly when this Command is scheduled to run
 	@Override
