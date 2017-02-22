@@ -33,7 +33,7 @@ public class Autonomous extends Command {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
-        while(distancebetweentapes < certainamount) {
+        while(distancefrompegs > certainamount) {
             Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
             while(centerbetweentapesx < centerx) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
