@@ -8,6 +8,7 @@ public class Autonomous extends Command {
     public GearAutonomous() {
         requires(Robot.mecanumDrive);
         requires(Robot.GearMechanism);
+	requires(Robot.AutoShooter);
     }
 
 	protected void initialize() {
@@ -74,10 +75,23 @@ public class Autonomous extends Command {
 		Time.delay(2);
 		Robot.mecanumDrive.killMotors();
 	}
-	done = true;
+	while(tapecenterx > centerx) {
+		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1); //turn right
+		Timer.delay(0.2);
+		Robot.mecanumDrive.killMotors();
 	}
-		
-			
+	while(tapecenterx < centerx) {
+		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1); //turn left
+		Timer.delay(0.2);
+		Robot.mecanumDrive.killMotors();
+	}
+	Robot.shooter.setAngle(/*do calculations on tape thickness to turn into angle*/);
+	Robot.shooter.startSpinning();
+	Robot.shooter.startIndexer();
+	Timer.delay(3);
+	Robot.shooter.stopIndexer();
+	Robot.shooter.stopSpinning();
+	done = true;
 
 	// Called repeatedly when this Command is scheduled to run
 	@Override
