@@ -20,7 +20,7 @@ public class Autonomous extends Command {
             Timer.delay(1);
             Robot.mecanumDrive.cartesiandrive(0, 0, 0.5, 1);
 		Timer.delay(1.5);
-            while(centerbetweentapesx < centerx) {
+            while(angle < 0) {
                 Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
             }
         }
@@ -29,7 +29,7 @@ public class Autonomous extends Command {
             Timer.delay(1);
             Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
 			Timer.delay(1.5)
-            while(centerbetweentapesx > centerx)//centerx is pretty much meaningless. It will be 0 
+            while(angle > 0)//centerx is pretty much meaningless. It will be 0 
 	    {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
@@ -45,9 +45,9 @@ public class Autonomous extends Command {
         }
         Robot.mecanumDrive.killMotors();
         Robot.GearMechanism.open();
-        while(centerbetweentapesx < wherecenterissupposedright) //we can find an actual value for wherecenterissupposedright by testing		{
+       /* while(centerbetweentapesx < wherecenterissupposedright) //we can find an actual value for wherecenterissupposedright by testing		{
             Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
-        }
+        } */
 	Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
 	Timer.delay(1);
 	Robot.mecanumDrive.killMotors();
@@ -76,12 +76,12 @@ public class Autonomous extends Command {
 		Time.delay(2);
 		Robot.mecanumDrive.killMotors();
 	}
-	while(tapecenterx > centerx) {
+	while(angle > 0) {
 		Robot.mecanumDrive.cartesianDrive(0, 0, 0.5, 1); //turn right
 		Timer.delay(0.2);
 		Robot.mecanumDrive.killMotors();
 	}
-	while(tapecenterx < centerx) {
+	while(angle < 0) {
 		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1); //turn left
 		Timer.delay(0.2);
 		Robot.mecanumDrive.killMotors();
@@ -89,7 +89,7 @@ public class Autonomous extends Command {
 	Robot.shooter.setAngle(/*do calculations on distance from goal to turn into angle*/);
 	Robot.shooter.startSpinning();
 	Robot.shooter.startIndexer();
-	Timer.delay(3);
+	Timer.delay(8);
 	Robot.shooter.stopIndexer();
 	Robot.shooter.stopSpinning();
 	done = true;
