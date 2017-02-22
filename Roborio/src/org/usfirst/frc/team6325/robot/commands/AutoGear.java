@@ -8,7 +8,8 @@ import org.usfirst.frc.team6325.robot.Robot;
  *
  */
 
-// distance = targetHeightinInches (5 inches) * imageWidth(640) / (2*targetHeightPixels*tan(cameraHorizontalAngle/2)
+// distance = targetHeightinInches (5 inches) * imageWidth(640) / (2*targetHeightPixels*tan(cameraHorizontalAngle/2) 
+// Diagonal FOV = 68.5. Horizontal FOV = 59.7?
 public class AutoGear extends Command {
 	boolean done = false;
 	
