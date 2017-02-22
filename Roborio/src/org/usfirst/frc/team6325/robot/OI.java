@@ -48,4 +48,6 @@ public class OI {
 	public Button gearButton = new Button(1);
 	gearButton.whenPressed(new OpenGear());
 	gearButton.whenReleased(new CloseGear());
+	public Button autoGearButton = new Button(2);
+	autoGearButton.whenPressed = (new AutoGear());
 }
