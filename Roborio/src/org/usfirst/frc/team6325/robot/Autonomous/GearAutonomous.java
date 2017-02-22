@@ -29,7 +29,8 @@ public class Autonomous extends Command {
             Timer.delay(1);
             Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
 			Timer.delay(1.5)
-            while(centerbetweentapesx > centerx) {
+            while(centerbetweentapesx > centerx)//centerx is pretty much meaningless. It will be 0 
+	    {
                 Robot.mecanumDrive.cartesianDrive(1, 0, 0, 0.5);
             }
         }
@@ -44,8 +45,7 @@ public class Autonomous extends Command {
         }
         Robot.mecanumDrive.killMotors();
         Robot.GearMechanism.open();
-        while(centerbetweentapesx < wherecenterissupposedright) 
-		{
+        while(centerbetweentapesx < wherecenterissupposedright) //we can find an actual value for wherecenterissupposedright by testing		{
             Robot.mecanumDrive.cartesianDrive(-1, 0, 0, 0.5);
         }
 	Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
