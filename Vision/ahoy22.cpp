@@ -97,7 +97,9 @@ int main(int argc, char** argv)
   cap.set(CV_CAP_PROP_FRAME_HEIGHT, IMG_HEIGHT);
 
   distFromHighGoal();
-  /* This is java. 
+  /* This is java.
+  // distance = targetHeightinInches (5 inches) * imageWidth(640) / (2*targetHeightPixels*tan(cameraHorizontalAngle/2) 
+// Diagonal FOV = 68.5. Horizontal FOV = 59.7?
    public static double returnCenterX(){
 		double[] defaultValue = new double[0];
 			// This is the center value returned by GRIP thank WPI
@@ -118,6 +120,8 @@ int main(int argc, char** argv)
 		
 	} */
   /* This is C++
+  // distance = targetHeightinInches (5 inches) * imageWidth(640) / (2*targetHeightPixels*tan(cameraHorizontalAngle/2) 
+// Diagonal FOV = 68.5. Horizontal FOV = 59.7?
   double distFromGearPeg() { //Find distance from the gear peg, in inches.
 	int maxArea = 0;
 	double bestHeight = 0.0;
@@ -130,6 +134,7 @@ int main(int argc, char** argv)
 	}
 	//Pixel height and distance are inversely proportional
 	return 48.0*bestHeight/targetHeight4FeetFromGearPeg;
+	return 5 * 640/ (2*bestHeight*tan(59.7/2))
 } */
 
 
