@@ -66,7 +66,15 @@ public class Autonomous extends Command {
 		Time.delay(2);
 		Robot.mecanumDrive.killMotors();
 	}
-        done = true;
+	if(pos == 1)
+	{
+		Robot.mecanumDrive.cartesianDrive(0, 0, -0.5, 1);
+		Timer.delay(1);
+		Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
+		Time.delay(2);
+		Robot.mecanumDrive.killMotors();
+	}
+	done = true;
 	}
 		
 			
