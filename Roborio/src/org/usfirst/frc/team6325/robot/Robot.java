@@ -40,6 +40,11 @@ public class Robot extends IterativeRobot {
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
+	UsbCamera camera0;
+	UsbCamera camera2;
+	UsbCamera camera3;
+	UsbCamera camera4;
+
 
 	/**
 	 * This function is run when the robot is first started up and should be
