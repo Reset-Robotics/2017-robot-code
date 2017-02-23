@@ -43,7 +43,12 @@ int iHighS = 113;
 //Value Values
 int iLowV = 222;
 int iHighV = 255;
+NetworkTable *table;
+NetworkTable::SetClientMode();
+NetworkTable::SetTeam(6325);
+table = NetworkTable::GetTable("LiftTracker");
 
+// table->PutNumber("varname",var);
 
 
 //Main
