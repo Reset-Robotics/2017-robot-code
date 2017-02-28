@@ -1,6 +1,8 @@
 package org.usfirst.frc.team6325.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 import org.usfirst.frc.team6325.robot.Robot;
 
@@ -13,20 +15,22 @@ import org.usfirst.frc.team6325.robot.Robot;
 public class AutoGear extends Command {
 	boolean done = false;
 	
+	double currentDistanceToPeg = -1.0;
+	double neededDistanceToPeg = -1.0;
+	
 	public AutoGear() {
 		// Use requires() here to declare subsystem dependencies
 		requires(Robot.mecanumDrive);
-		requires(Robot.GearMechanism);
+		requires(Robot.gearMechanism);
 	}
 
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() 
 	{
-		public static NetworkTable table;
+		NetworkTable table;
 		table = NetworkTable.getTable("LiftTracker");
-		currentDistancetoPeg = table.GetNumber("currentDistancetoPeg",currentDistanceToPeg) 
-		double neededDistancetoPeg;
+		currentDistanceToPeg = table.getNumber("currentDistancetoPeg",currentDistanceToPeg);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -38,13 +42,13 @@ public class AutoGear extends Command {
 			Robot.mecanumDrive.cartesianDrive(0, 1, 0, 0.5);
 		}
 		//Should probably add code that lines up robot on X axis
-		Robot.GearMechanism.open();
+		Robot.gearMechanism.open();
 		Timer.delay(1);
 		Robot.mecanumDrive.cartesianDrive(-0.25, 0, 0, 0.5);
 		Timer.delay(0.25);
-		Robot.mecanumDrive(cartesianDrive(0, -1, 0, 0.5);
+		Robot.mecanumDrive.cartesianDrive(0, -1, 0, 0.5);
 		Timer.delay(2);
-		Robot.GearMechanism.close();
+		Robot.gearMechanism.close();
 		done = true;
 				 
 				   

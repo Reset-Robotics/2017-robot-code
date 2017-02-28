@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.usfirst.frc.team6325.robot.Robot;
 import org.usfirst.frc.team6325.robot.RobotMap;
+import org.usfirst.frc.team6325.robot.commands.JoystickDrive;
+
 import com.ctre.CANTalon;
 
 //this is the subsystem code for the mecanum drivetrain
@@ -86,7 +88,7 @@ public class MecanumDrive extends Subsystem {
 	
 	@Override
 	protected void initDefaultCommand() {
-		// TODO Auto-generated method stub
+		setDefaultCommand(new JoystickDrive());
 	}
 
 }

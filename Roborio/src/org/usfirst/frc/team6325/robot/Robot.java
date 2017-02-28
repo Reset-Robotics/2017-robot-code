@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team6325.robot.commands.ExampleCommand;
+import org.usfirst.frc.team6325.robot.commands.GearAutonomous;
 import org.usfirst.frc.team6325.robot.subsystems.Climber;
 import org.usfirst.frc.team6325.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team6325.robot.subsystems.GearMechanism;

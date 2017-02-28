@@ -2,6 +2,7 @@ package org.usfirst.frc.team6325.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class GearMechanism extends Subsystem {
@@ -23,8 +24,14 @@ public class GearMechanism extends Subsystem {
 		piston.set(DoubleSolenoid.Value.kReverse);
 	}
 	
-	public Value getValue() {
-		return piston.get();
+	public String getValue() {
+		Value val = piston.get();
+		
+		if(val == Value.kForward){
+			return "Closed";
+		}else{
+			return "Open";
+		}
 	}
 	
 	public void initDefaultCommand() {
