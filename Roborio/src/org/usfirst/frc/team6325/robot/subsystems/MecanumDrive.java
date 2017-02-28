@@ -20,6 +20,9 @@ public class MecanumDrive extends Subsystem {
 			new CANTalon(RobotMap.frontRight)
 	};
 	
+	private DrivetrainOrientation orientation = DrivetrainOrientation.CLIMBER;
+	private final double WHEEL_RADIUS = 3.0;
+	
 	//drive the robot using the joystick
 	public void joystickDrive(){
 		double x = Robot.oi.joyDriver.getX();
@@ -27,7 +30,14 @@ public class MecanumDrive extends Subsystem {
 		double r = Robot.oi.joyDriver.getTwist();
 		double t = Robot.oi.joyDriver.getThrottle();
 		
-		cartesianDrive(x, y, r, t);
+		double angle = Math.atan(y / x);
+		double radius = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		
+		angle += orientation.angle();
+		
+		double s = radius * t;
+		
+		polarDrive(angle, s, r);
 	}
 	//control the robot using seperate inputs for x, y, and rotation
 	public void cartesianDrive(double x, double y, double r, double throttle){
@@ -53,6 +63,8 @@ public class MecanumDrive extends Subsystem {
 	
 	//control the robot using angle and speed inputs
 	public void polarDrive(double angle, double speed, double r){
+		angle += Math.PI / 2;
+		
 		double x = Math.cos(angle) * speed;
 		double y = Math.sin(angle) * speed;
 		
@@ -66,24 +78,24 @@ public class MecanumDrive extends Subsystem {
 		}
 	}
 	
+	public void changeOrientation(DrivetrainOrientation o){
+		this.orientation = o;
+	}
+	
 	public double getFrontLeftSpeed() {
-		double speed = (Robot.oi.joyDriver.getX()+Robot.oi.joyDriver.getY()+Robot.oi.joyDriver.getTwist())*0.5;
-		return Math.min(Math.max(speed, -1.0), 1.0);
+		return motors[0].get();
 	}
 	
 	public double getFrontRightSpeed() {
-		double speed = -(Robot.oi.joyDriver.getX()-Robot.oi.joyDriver.getY()-Robot.oi.joyDriver.getTwist())*0.5;
-		return Math.min(Math.max(speed, -1.0), 1.0);
+		return motors[3].get();
 	}
 	
 	public double getBackLeftSpeed() {
-		double speed = (Robot.oi.joyDriver.getX()-Robot.oi.joyDriver.getY()+Robot.oi.joyDriver.getTwist())*0.5;
-		return Math.min(Math.max(speed, -1.0), 1.0);
+		return motors[1].get();
 	}
 	
 	public double getBackRightSpeed() {
-		double speed = -(Robot.oi.joyDriver.getX()+Robot.oi.joyDriver.getY()-Robot.oi.joyDriver.getTwist())*0.5;
-		return Math.min(Math.max(speed, -1.0), 1.0);
+		return motors[2].get();
 	}
 	
 	@Override
