@@ -33,15 +33,27 @@ public void robotInit() {
             	
             	if((Robot.oi.joySecondary.getRawButton(5)) {
             		allowCam1 = true;
+                    allowCam2 = false;
+                    allowCam3 = false;
+                    allowCam4 = false;
             	}
                 if((Robot.oi.joySecondary.getRawButton(6)) {
             		allowCam2 = true;
+                    allowCam1 = false;
+                    allowCam3 = false;
+                    allowCam4 = false;
             	}
                 if((Robot.oi.joySecondary.getRawButton(7)) {
             		allowCam3 = true;
+                    allowCam1 = false;
+                    allowCam2 = false;
+                    allowCam4 = false;
             	}
                 if((Robot.oi.joySecondary.getRawButton(8)) {
             		allowCam4 = true;
+                    allowCam1 = false;
+                    allowCam2 = false;
+                    allowCam3 = false;
             	}
             	
                 if(allowCam1){
