@@ -36,6 +36,11 @@ public class Robot extends IterativeRobot {
 	public static final JetsonInterlink jetsonInterlink = new JetsonInterlink();
 	
 	public static OI oi;
+	// public static AHRS ahrs; // This is declaring the Nav-X Sensor
+	
+	// For field centric driving we can use WPLib Cartesian Drive class and do 
+	
+	//  Robot.mecanumDrive_Cartesian(joyDriver.getX(), joyDriver.getY(), joyDriver.getTwist(), ahrs.getAngle());
 	
 	public static NetworkTable table;
 
@@ -54,6 +59,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		oi = new OI();
+		
+		
 		chooser.addDefault("Default Auto", new ExampleCommand());
 		chooser.addDefault("Gear Center", new GearAutonomous());
   
