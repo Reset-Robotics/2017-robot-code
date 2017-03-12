@@ -9,14 +9,13 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team6325.robot.commands.ExampleCommand;
+import org.usfirst.frc.team6325.robot.commands.Dashboard;
 import org.usfirst.frc.team6325.robot.commands.GearAutonomous;
+import org.usfirst.frc.team6325.robot.commands.MoveForwardAuto;
 import org.usfirst.frc.team6325.robot.subsystems.Climber;
-import org.usfirst.frc.team6325.robot.subsystems.ExampleSubsystem;
 import org.usfirst.frc.team6325.robot.subsystems.GearMechanism;
 import org.usfirst.frc.team6325.robot.subsystems.JetsonInterlink;
 import org.usfirst.frc.team6325.robot.subsystems.MecanumDrive;
-import org.usfirst.frc.team6325.robot.subsystems.Shooter;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 /**
@@ -28,10 +27,8 @@ import edu.wpi.first.wpilibj.CameraServer;
  */
 public class Robot extends IterativeRobot {
 
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static final MecanumDrive mecanumDrive = new MecanumDrive();
 	public static final GearMechanism gearMechanism = new GearMechanism();
-	public static final Shooter shooter = new Shooter();
 	public static final Climber climber = new Climber();
 	public static final JetsonInterlink jetsonInterlink = new JetsonInterlink();
 	
@@ -54,8 +51,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		oi = new OI();
-		chooser.addDefault("Default Auto", new ExampleCommand());
-		chooser.addDefault("Gear Center", new GearAutonomous());
+		chooser.addDefault("Move forward", new MoveForwardAuto());
+		chooser.addObject("Gear Center", new GearAutonomous());
+		
+		gearMechanism.init();
+		gearMechanism.close();
   
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
@@ -70,6 +70,8 @@ public class Robot extends IterativeRobot {
 		camera4.setResolution(640, 480); // Roborio 2
 		
 		table = NetworkTable.getTable("LiftTracker");
+		
+		Dashboard.update();
 	}
 
 	/**
@@ -120,10 +122,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		
+		Dashboard.update();
 	}
 
 	@Override
 	public void teleopInit() {
+		
+		gearMechanism.init();
+		gearMechanism.close();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -138,14 +145,16 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		if (Robot.oi.joySecondary.getRawButton(0)) {
-			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera3.getName());
-		} else if (Robot.oi.joySecondary.getRawButton(1)) {
-			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera4.getName());
-		} else if (Robot.oi.joySecondary.getRawButton(2)) {
-			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
-		} else if (Robot.oi.joySecondary.getRawButton(3)) {
-			NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
+		
+		Dashboard.update();
+		if (Robot.oi.joyDriver.getRawButton(7)) {
+			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera3.getName());
+		} else if (Robot.oi.joyDriver.getRawButton(8)) {
+			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera4.getName());
+		} else if (Robot.oi.joyDriver.getRawButton(9)) {
+			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
+		} else if (Robot.oi.joyDriver.getRawButton(10)) {
+			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
 		}
 			
 	

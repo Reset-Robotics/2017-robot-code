@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class GearMechanism extends Subsystem {
 
-	Compressor compressor = new Compressor(0);
+	Compressor compressor = new Compressor(21);
 	
-	DoubleSolenoid piston = new DoubleSolenoid(1, 2);
+	DoubleSolenoid piston = new DoubleSolenoid(21, 0, 1);
 	
 	public void init(){
 		compressor.setClosedLoopControl(true);
@@ -17,11 +17,11 @@ public class GearMechanism extends Subsystem {
 	}
 	
 	public void open(){
-		piston.set(DoubleSolenoid.Value.kForward);
+		piston.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	public void close(){
-		piston.set(DoubleSolenoid.Value.kReverse);
+		piston.set(DoubleSolenoid.Value.kForward);
 	}
 	
 	public String getValue() {

@@ -3,21 +3,20 @@ package org.usfirst.frc.team6325.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 
 import org.usfirst.frc.team6325.robot.Robot;
-import org.usfirst.frc.team6325.robot.subsystems.DrivetrainOrientation;
 
 /**
  *
  */
-public class SetOrientationGear extends Command {
-	public SetOrientationGear() {
+public class DrivetrainGyroOn extends Command {
+	public DrivetrainGyroOn() {
 		// Use requires() here to declare subsystem dependencies
-		requires(Robot.mecanumDrive);
+		//requires(Robot.mecanumDrive);
 	}
 
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		Robot.mecanumDrive.changeOrientation(DrivetrainOrientation.GEAR);
+		Robot.mecanumDrive.setUsingGyro(true);
 	}
 
 	// Called repeatedly when this Command is scheduled to run

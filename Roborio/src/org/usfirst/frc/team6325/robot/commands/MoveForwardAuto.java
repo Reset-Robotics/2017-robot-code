@@ -1,15 +1,17 @@
 package org.usfirst.frc.team6325.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 
 import org.usfirst.frc.team6325.robot.Robot;
-import org.usfirst.frc.team6325.robot.subsystems.DrivetrainOrientation;
 
 /**
  *
  */
-public class SetOrientationClimber extends Command {
-	public SetOrientationClimber() {
+public class MoveForwardAuto extends Command {
+	boolean done = false;
+	
+	public MoveForwardAuto() {
 		// Use requires() here to declare subsystem dependencies
 		requires(Robot.mecanumDrive);
 	}
@@ -17,7 +19,9 @@ public class SetOrientationClimber extends Command {
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		Robot.mecanumDrive.changeOrientation(DrivetrainOrientation.CLIMBER);
+		Robot.mecanumDrive.cartesianDrive(0.5, 0.0,  0.0, 1.0);
+		Timer.delay(2.5);
+		done = true;
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -28,7 +32,7 @@ public class SetOrientationClimber extends Command {
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
 	protected boolean isFinished() {
-		return true;
+		return done;
 	}
 
 	// Called once after isFinished returns true

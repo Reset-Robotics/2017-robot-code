@@ -17,8 +17,7 @@ public class GearAutonomous extends Command {
     public GearAutonomous() {
         requires(Robot.mecanumDrive);
         requires(Robot.gearMechanism);
-        requires(Robot.shooter);
-    }
+        }
 
 	protected void initialize() {
         int pos = 0; // position of robot at start of match: -1, 0, 1
@@ -96,11 +95,7 @@ public class GearAutonomous extends Command {
         	Robot.mecanumDrive.killMotors();
         }
         //Robot.shooter.setAngle(/*do calculations on distance from goal to turn into angle*/);
-        Robot.shooter.startSpinning();
-        Robot.shooter.startIndexer();
         Timer.delay(8);
-        Robot.shooter.stopIndexer();
-        Robot.shooter.stopSpinning();
         done = true;
 	}
 

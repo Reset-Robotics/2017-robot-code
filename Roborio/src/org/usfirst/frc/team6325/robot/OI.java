@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
-import org.usfirst.frc.team6325.robot.commands.ExampleCommand;
+import org.usfirst.frc.team6325.robot.commands.CloseGear;
+import org.usfirst.frc.team6325.robot.commands.OpenGear;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -42,11 +43,16 @@ public class OI {
 	public Joystick joyDriver = new Joystick(0);
 	public Joystick joySecondary = new Joystick(1);
 	
-	public Button fire = new JoystickButton(joySecondary, 1);
-	public Button gearButton = new JoystickButton(joySecondary, 2);
+	public Button fire = new JoystickButton(joySecondary, 2);
+	public Button gearButton = new JoystickButton(joySecondary, 1);
 	public Button autoGear = new JoystickButton(joySecondary, 3);
 	public Button autoShooter = new JoystickButton(joySecondary, 4);
 	public Button activateClimber = new JoystickButton(joySecondary, 5);
+	
+	public OI(){
+		gearButton.whenPressed(new OpenGear());
+		gearButton.whenReleased(new CloseGear());
+	}
 	
 	
 }

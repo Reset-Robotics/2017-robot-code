@@ -3,21 +3,24 @@ package org.usfirst.frc.team6325.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 
 import org.usfirst.frc.team6325.robot.Robot;
-import org.usfirst.frc.team6325.robot.subsystems.DrivetrainOrientation;
 
 /**
  *
  */
-public class SetOrientationBack extends Command {
-	public SetOrientationBack() {
+public class InitGear extends Command {
+	
+	boolean done = false;
+	
+	public InitGear() {
 		// Use requires() here to declare subsystem dependencies
-		requires(Robot.mecanumDrive);
+		requires(Robot.gearMechanism);
 	}
 
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		Robot.mecanumDrive.changeOrientation(DrivetrainOrientation.BACK);
+		Robot.gearMechanism.init();
+		done = true;
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -28,7 +31,7 @@ public class SetOrientationBack extends Command {
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
 	protected boolean isFinished() {
-		return true;
+		return done;
 	}
 
 	// Called once after isFinished returns true
