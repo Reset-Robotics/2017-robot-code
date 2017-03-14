@@ -123,6 +123,7 @@ int main() {
 			std::vector<cv::RotatedRect> r1(targets[1]);
 			centerX= r.x + (r.width/2);
 			centerX1= r1.x + (r1.width/2);
+			double distanceFromCenterPixels= ((centerX + centerX1) / 2) - (640 / 2); // 640 is camera width
 			// cout this
 
 		}
