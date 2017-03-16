@@ -8,10 +8,10 @@ import org.usfirst.frc.team6325.robot.Robot;
 /**
  *
  */
-public class MoveForwardAuto extends Command {
+public class AutoMoveForward extends Command {
 	boolean done = false;
 	
-	public MoveForwardAuto() {
+	public AutoMoveForward() {
 		// Use requires() here to declare subsystem dependencies
 		requires(Robot.mecanumDrive);
 	}

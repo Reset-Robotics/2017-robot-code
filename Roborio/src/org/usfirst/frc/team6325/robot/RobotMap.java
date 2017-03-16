@@ -40,11 +40,16 @@ public class RobotMap {
 	
 	public static int maxRange = 10;
 	
+	public static String networkTableName = "LiftTracker"; //the name of the NetworkTable the jetson is sending data to
+	public static String distanceValueName = "CenterDist"; //the name of the variable that contains the peg distance
+	
 	
 	public static Map<Double, Double> shooterAngles = new HashMap<Double, Double>();
 	public static Map<String, Double> customData = new HashMap<String, Double>();
 	public static ArrayList<Double> distances;
 	
+	
+	//some really crazy shit for the ball shooter that we don't have
 	public static void readData(){
 		FileInputStream file = null;
 		ObjectInputStream in = null;

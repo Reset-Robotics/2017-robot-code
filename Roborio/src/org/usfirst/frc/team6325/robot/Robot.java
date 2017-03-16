@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team6325.robot.commands.Dashboard;
-import org.usfirst.frc.team6325.robot.commands.GearAutonomous;
-import org.usfirst.frc.team6325.robot.commands.MoveForwardAuto;
+import org.usfirst.frc.team6325.robot.commands.AutoGearCenter;
+import org.usfirst.frc.team6325.robot.commands.AutoGearLeft;
+import org.usfirst.frc.team6325.robot.commands.AutoGearRight;
+import org.usfirst.frc.team6325.robot.commands.AutoMoveForward;
 import org.usfirst.frc.team6325.robot.subsystems.Climber;
 import org.usfirst.frc.team6325.robot.subsystems.GearMechanism;
-import org.usfirst.frc.team6325.robot.subsystems.JetsonInterlink;
 import org.usfirst.frc.team6325.robot.subsystems.MecanumDrive;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -30,14 +31,8 @@ public class Robot extends IterativeRobot {
 	public static final MecanumDrive mecanumDrive = new MecanumDrive();
 	public static final GearMechanism gearMechanism = new GearMechanism();
 	public static final Climber climber = new Climber();
-	public static final JetsonInterlink jetsonInterlink = new JetsonInterlink();
 	
 	public static OI oi;
-	// public static AHRS ahrs; // This is declaring the Nav-X Sensor
-	
-	// For field centric driving we can use WPLib Cartesian Drive class and do 
-	
-	//  Robot.mecanumDrive_Cartesian(joyDriver.getX(), joyDriver.getY(), joyDriver.getTwist(), ahrs.getAngle());
 	
 	public static NetworkTable table;
 
@@ -57,8 +52,12 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		oi = new OI();
 
-		chooser.addDefault("Move forward", new MoveForwardAuto());
-		chooser.addObject("Gear Center", new GearAutonomous());
+		chooser.addDefault("Move forward", new AutoMoveForward());
+		chooser.addObject("Gear center peg", new AutoGearCenter());
+		chooser.addObject("Gear left peg", new AutoGearLeft());
+		chooser.addObject("Gear right peg", new AutoGearRight());
+		
+		mecanumDrive.init();
   
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
@@ -132,8 +131,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		
-		gearMechanism.init();
-		gearMechanism.close();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove

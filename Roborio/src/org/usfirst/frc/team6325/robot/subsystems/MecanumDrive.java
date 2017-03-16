@@ -32,10 +32,10 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	private double driveAngle = 0.0;
 	
 	//if the robot is currently using field oriented driving
-	private boolean useGyro = false;
+	private boolean fieldOriented = false;
 	
 	//if the robot is currently using a specified angle
-	private boolean useAngle = false;
+	private boolean angleLocked = false;
 	
 	private double turnRate = 0.0;
 	
@@ -47,7 +47,24 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 			new CANTalon(RobotMap.frontRight)
 	};
 	
-	//navX sensor
+	/*
+	The robot knows where it is at all times. It knows this because it knows where it isn't. By 
+	subtracting where it is from where it isn't, or where it isn't from where it is (whichever is 
+	greater), it obtains a difference, or deviation. The guidance subsystem uses deviations to 
+	generate corrective commands to drive the robot from a position where it is to a position 
+	where it isn't, and arriving at a position where it wasn't, it now is. Consequently, the position 
+	where it is, is now the position that it wasn't, and it follows that the position that it was, is now 
+	the position that it isn't. In the event that the position that it is in is not the position that it 
+	wasn't, the system has acquired a variation, the variation being the difference between 
+	where the robot is, and where it wasn't. If variation is considered to be a significant factor, it 
+	too may be corrected by the GEA. However, the robot must also know where it was.The 
+	robot guidance computer scenario works as follows. Because a variation has modified some 
+	of the information the robot has obtained, it is not sure just where it is. However, it is sure 
+	where it isn't, within reason, and it knows where it was. It now subtracts where it should be 
+	from where it wasn't, or vice-versa, and by differentiating this from the algebraic sum of 
+	where it shouldn't be, and where it was, it is able to obtain the deviation and its variation, 
+	which is called error.
+	*/
 	private AHRS navx = new AHRS(SerialPort.Port.kMXP);
 	
 	//pid controller for turning to a specific angle
@@ -78,13 +95,13 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		if(Math.abs(left) < deadzone) left = 0;
 		if(Math.abs(spin) < deadzone) spin = 0;
 
-		if(useGyro && useAngle){
+		if(fieldOriented && angleLocked){
 			fieldOrientedDriveAtAngle(forward, left, driveAngle, throttle);
 		}
-		else if(useGyro){
+		else if(fieldOriented){
 			fieldOrientedDrive(forward, left, spin, throttle);
 		}
-		else if(useAngle){
+		else if(angleLocked){
 			driveAtAngle(forward, left, driveAngle, throttle);
 		}
 		else{
@@ -93,10 +110,36 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	}
 	
 	/**
-	 * Drive the robot using seperate inputs for x (forward - backward), y (left - right), and angular motion.
+	 * Drives the robot. will modify the coordinates if field oriented drive or angle lock are turned on.
 	 * @param forward How fast the robot should move in the X direction (1.0 = full speed forward, -1.0 = full speed backwards)
-	 * @param forward How fast the robot should move in the Y direction (1.0 = full speed left, -1.0 = full speed right)
-	 * @param spin forward How fast the robot should spin along its center of mass (1.0 = full speed clockwise, -1.0 = full speed counter-clockwise)
+	 * @param left How fast the robot should move in the Y direction (1.0 = full speed left, -1.0 = full speed right)
+	 * @param spin  How fast the robot should spin along its center of mass (1.0 = full speed clockwise, -1.0 = full speed counter-clockwise)
+	 * @param throttle Multiplies all inputs by a set value, usually just used for joystick throttle input
+	 */
+	public void drive(double forward, double left, double spin, double throttle){
+		
+		if(fieldOriented){
+			double angle = navx.getAngle() * Math.PI / 180;
+			
+			double rotatedForward = forward * Math.cos(angle) + left * Math.sin(angle);
+			double rotatedLeft = -forward * Math.sin(angle) + left * Math.cos(angle);
+			
+			forward = rotatedForward;
+			left = rotatedLeft;
+		}
+		
+		if(angleLocked){
+			spin = turnRate;
+		}
+		
+		cartesianDrive(forward, left, spin, throttle);
+	}
+	
+	/**
+	 * Just drives the robot directly, ignoring the field oriented and angle locked settings.
+	 * @param forward How fast the robot should move in the X direction (1.0 = full speed forward, -1.0 = full speed backwards)
+	 * @param left How fast the robot should move in the Y direction (1.0 = full speed left, -1.0 = full speed right)
+	 * @param spin  How fast the robot should spin along its center of mass (1.0 = full speed clockwise, -1.0 = full speed counter-clockwise)
 	 * @param throttle Multiplies all inputs by a set value, usually just used for joystick throttle input
 	 */
 	public void cartesianDrive(double forward, double left, double spin, double throttle){
@@ -115,7 +158,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 			if(Math.abs(v) > max) max = Math.abs(v);
 		}
 		
-		if(Math.abs(max) > 1.0){
+		if(max > 1.0){
 			for(double v : wheels){
 				v = v / max;
 			}
@@ -188,8 +231,10 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	public void turnToAngle(double angle, double throttle){
 		killMotors();
 		
+		lockAngle(angle);
+		
 		while(Math.abs(navx.getAngle() - turnController.getSetpoint()) > turnThreshold){
-			driveAtAngle(0.0, 0.0, angle, throttle);
+			drive(0.0, 0.0, angle, throttle);
 		}
 		
 		killMotors();
@@ -242,13 +287,13 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		return navx.getAngle();
 	}
 	
-	public boolean isUsingGyro(){
-		return useGyro;
+	public boolean getFieldOriented(){
+		return fieldOriented;
 	}
 	
 	//turn field oriented drive on or off
-	public void setUsingGyro(boolean use){
-		useGyro = use;
+	public void setFieldOriented(boolean use){
+		fieldOriented = use;
 	}
 	
 	public void resetGyro(){
@@ -256,20 +301,20 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	}
 	
 	//locks the robot's heading to a specified angle
-	public void setAngle(double newAngle){
+	public void lockAngle(double newAngle){
 		driveAngle = newAngle;
 		
 		turnController.enable();
 		turnController.setSetpoint(driveAngle);
 		
-		useAngle = true;
+		angleLocked = true;
 	}
 	
 	//allows the robot to start spinning again
-	public void stopUsingAngle(){
+	public void unlockAngle(){
 		turnController.disable();
 		
-		useAngle = false;
+		angleLocked = false;
 	}
 	
 	public double getFrontLeftSpeed() {

@@ -15,7 +15,7 @@ public class DrivetrainGyroOff extends Command {
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		Robot.mecanumDrive.setUsingGyro(false);
+		Robot.mecanumDrive.setFieldOriented(false);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
