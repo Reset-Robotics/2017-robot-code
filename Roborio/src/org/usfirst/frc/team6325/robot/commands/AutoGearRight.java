@@ -50,7 +50,7 @@ NetworkTable table = NetworkTable.getTable(RobotMap.networkTableName);
     	double offset = table.getNumber(RobotMap.distanceValueName, 0.0);
     	
     	//align with peg
-    	while(offset > 5.0){
+    	while(Math.abs(offset) > 5.0){
     		Robot.mecanumDrive.drive(0.0, offset * visionMoveSensetivity, 0.0, throttle);
     		offset = table.getNumber(RobotMap.distanceValueName, 0.0);
     	}
