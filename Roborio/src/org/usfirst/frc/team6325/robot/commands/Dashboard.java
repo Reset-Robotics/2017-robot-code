@@ -25,7 +25,7 @@ public class Dashboard extends Command {
              SmartDashboard.putData(Robot.gearMechanism);
              SmartDashboard.putData(Robot.climber);
 
-             SmartDashboard.putString("Gear Piston Position", Robot.gearMechanism.getValue());
+             //SmartDashboard.putString("Gear Piston Position", Robot.gearMechanism.getValue());
         }
         
         @Override
@@ -42,17 +42,18 @@ public class Dashboard extends Command {
             SmartDashboard.putNumber("Front Right Motor Speed", Robot.mecanumDrive.getFrontRightSpeed());
             SmartDashboard.putNumber("Back Left Motor Speed", Robot.mecanumDrive.getBackLeftSpeed());
             SmartDashboard.putNumber("Back Right Motor Speed", Robot.mecanumDrive.getBackRightSpeed());
+            
+            SmartDashboard.putNumber("Gyro Angle", Robot.mecanumDrive.getAngle());
 
             SmartDashboard.putData(Robot.mecanumDrive);
             SmartDashboard.putData(Robot.gearMechanism);
             SmartDashboard.putData(Robot.climber);
             
-            SmartDashboard.putData("Open gear", new OpenGear());
-            SmartDashboard.putData("Close gear", new CloseGear()); 
-            SmartDashboard.putData("Initialize pneumatics", new InitGear());
-            SmartDashboard.putData("Activate climber", new ClimberCommand());
+            SmartDashboard.putData("Turn on field oriented drive", new DrivetrainGyroOn());
+            SmartDashboard.putData("Turn off field oriented drive", new DrivetrainGyroOff());
+            SmartDashboard.putData("Reset gyro", new DrivetrainGyroReset());
 
             //SmartDashboard.putNumber("Shooter Angle", Robot.shooter.getAngle());
-            SmartDashboard.putString("Gear Piston Position", Robot.gearMechanism.getValue());
+            //SmartDashboard.putString("Gear Piston Position", Robot.gearMechanism.getValue());
         }
 }

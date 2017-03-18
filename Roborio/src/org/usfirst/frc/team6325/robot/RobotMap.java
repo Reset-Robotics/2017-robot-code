@@ -25,17 +25,17 @@ public class RobotMap {
 	
 	//CAN IDs for the mecanum wheel motors
 	public static int frontRight = 2;
-	public static int frontLeft = 3;
-	public static int backRight = 1;
-	public static int backLeft = 0;
+	public static int frontLeft = 1;
+	public static int backRight = 3;
+	public static int backLeft = 4;
 	
 	//CAN ID for the shooter's aim controller
-	public static int shooterAim = 4;
+	public static int shooterAim = 9999;
 	//CAN ID for the shooter's launch wheel controller
 	public static int shooterWheel = 7;
 	public static int shooterIndexer = 6;
 	
-	public static int climber = 5;
+	public static int climber = 0;
 	
 	
 	public static int maxRange = 10;

@@ -39,9 +39,8 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	UsbCamera camera0;
-	UsbCamera camera2;
-	UsbCamera camera3;
-	UsbCamera camera4;
+	//UsbCamera camera2;
+
 
 
 	/**
@@ -62,14 +61,9 @@ public class Robot extends IterativeRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 		UsbCamera camera0  = CameraServer.getInstance().startAutomaticCapture(); //http://roborio-6325-frc.local:1181/?action=stream
-		UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1182/?action=stream
-		UsbCamera camera3 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1183/?action=stream
-		UsbCamera camera4 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1184/?action=stream
-		camera0.setResolution(640, 480); // Jetson Gears
-		camera2.setResolution(640, 480); // Jetson Balls
-		// set exposure for vision cameras
-		camera3.setResolution(640, 480); // Roborio 1
-		camera4.setResolution(640, 480); // Roborio 2
+		//UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();//http://roborio-6325-frc.local:1182/?action=stream
+		camera0.setResolution(320, 240); // Jetson Gears
+	
 		
 		table = NetworkTable.getTable("LiftTracker");
 		
@@ -89,6 +83,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		Dashboard.update();
 	}
 
 	/**
@@ -104,7 +99,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autonomousCommand = chooser.getSelected();
+		mecanumDrive.init();
+		autonomousCommand = new AutoGearCenter();//chooser.getSelected();
 
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -147,15 +143,6 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		
 		Dashboard.update();
-		if (Robot.oi.joyDriver.getRawButton(7)) {
-			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera3.getName());
-		} else if (Robot.oi.joyDriver.getRawButton(8)) {
-			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera4.getName());
-		} else if (Robot.oi.joyDriver.getRawButton(9)) {
-			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
-		} else if (Robot.oi.joyDriver.getRawButton(10)) {
-			//NetworkTable.getTable("CameraSwitcher").putString("CameraSelection", camera0.getName());
-		}
 			
 	
 	}

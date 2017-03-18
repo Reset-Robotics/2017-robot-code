@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
  */
 public class AutoGearCenter extends Command {
 	
-	private final double firstMoveTime = 1.0; //how long the robot will move before lining up
+	private final double firstMoveTime = 5; //how long the robot will move before lining up
 	private final double secondMoveTime = 2.0; //how long the robot will move after lining up
 	private final double visionMoveSensetivity = 0.001; // how fast the robot will try to align with the peg. should be very small
-	private final double throttle = 0.5; //how fast the robot will move
+	private final double throttle = 1.0; //how fast the robot will move
 	
 	boolean done = false;
 
@@ -31,10 +31,12 @@ public class AutoGearCenter extends Command {
     	Robot.mecanumDrive.lockAngle(0.0);
     	
     	//drive forward
-    	Robot.mecanumDrive.drive(1.0, 0.0, 0.0, throttle);
+    	Robot.mecanumDrive.drive(0.3, 0.0, 0.0, throttle);
     	Timer.delay(firstMoveTime);
     	Robot.mecanumDrive.killMotors();
     	
+    	Robot.mecanumDrive.unlockAngle();
+    	/*
     	//wait for robot to stop
     	Timer.delay(0.5);
     	
@@ -54,7 +56,7 @@ public class AutoGearCenter extends Command {
     	Robot.mecanumDrive.drive(1.0, 0.0, 0.0, throttle);
     	Timer.delay(secondMoveTime);
     	Robot.mecanumDrive.killMotors();
-    	
+    	*/
     	done = true;
     }
 

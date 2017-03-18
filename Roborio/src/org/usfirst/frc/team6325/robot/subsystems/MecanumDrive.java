@@ -22,7 +22,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	private final double deadzone = 0.1;
 	
 	//the PID values used for turning to a specific angle
-	private final double turnP = 0.005;
+	private final double turnP = 0.1;
 	private final double turnI = 0.0;
 	private final double turnD = 0.0;
 	private final double turnF = 0.0;
@@ -86,7 +86,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	
 	//drive the robot using the joystick
 	public void joystickDrive(){
-		double forward = Robot.oi.joyDriver.getY();
+		double forward = -Robot.oi.joyDriver.getY();
 		double left = Robot.oi.joyDriver.getX();
 		double spin = Robot.oi.joyDriver.getTwist() * 0.75;
 		double throttle = 1.0;  //Robot.oi.joyDriver.getThrottle();
@@ -95,7 +95,8 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		if(Math.abs(left) < deadzone) left = 0;
 		if(Math.abs(spin) < deadzone) spin = 0;
 
-		if(fieldOriented && angleLocked){
+		drive(forward, left, spin, throttle);
+		/*if(fieldOriented && angleLocked){
 			fieldOrientedDriveAtAngle(forward, left, driveAngle, throttle);
 		}
 		else if(fieldOriented){
@@ -106,7 +107,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		}
 		else{
 			cartesianDrive(forward, left, spin, throttle);
-		}
+		}*/
 	}
 	
 	/**
@@ -146,10 +147,10 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		
 		//calculate the speed of each wheel
 		double wheels [] = {
-			(forward - left - spin) * throttle,
-			(forward + left - spin) * throttle,
-			-((forward - left + spin) * throttle),
-			-((forward + left + spin) * throttle),	
+			(-forward - left + spin) * throttle,
+			(-forward + left + spin) * throttle,
+			-((-forward - left - spin) * throttle),
+			-((-forward + left - spin) * throttle),	
 		};
 		
 		//make sure motor values are never greater than 100% so we don't break the motors
@@ -203,7 +204,9 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 			turnController.setSetpoint(angle);
 		}
 		
-		cartesianDrive(forward, left, turnRate, throttle);
+		double spin = -getAngle() * 0.02;
+		
+		cartesianDrive(forward, left, spin, throttle);
 	}
 	
 	/**

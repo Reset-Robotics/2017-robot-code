@@ -16,7 +16,7 @@ public class Climber extends Subsystem {
 	
 	public void drive(double power){
 		if(power < 0.1) power = 0;
-		motor.set(-power);
+		motor.set(power);
 	}
 
 	public void initDefaultCommand() {
