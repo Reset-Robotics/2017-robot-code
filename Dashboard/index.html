@@ -1,72 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="Dashboard">
 
 <head>
-    <meta charset="utf-8">
-    <title>FRC Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <title>FRC Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+  <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+  <script src="bower_components/angular-material/angular-material.min.js"></script>
+  <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+  <script src="bower_components/angular-nvd3/dist/angular-nvd3.min.js"></script>
+  <script src="bower_components/d3/d3.min.js"></script>
+  <script src="bower_components/nvd3/build/nv.d3.min.js"></script>
 </head>
 
 <body>
-    <!-- Clock that shows up in top left -->
-    <div id="timer">2:15</div>
-    <header>
-        <!-- Tells whether robot is connected to dashboard. -->
-        <div id="robot-state">Unknown state</div>
-        <button id="tuning-button">Tuning</button>
-    </header>
-    <!-- You'll need to mess around with the CSS of #camera (found in css/style.css) to get it to work.
-        More explanation in that CSS rule. -->
-    <div id="camera"></div>
-    <div id="tuning" style="display: none;">
-        <input type="text" placeholder="Property" id="name">
-        <input type="text" placeholder="Value" id="value">
-        <button id="set">Set</button>
-        <button id="get">Get</button>
+
+  <div class="background" layout="column" flex="grow"> <!-- -->
+    <div class="box" layout="row" flex="grow"> <!--clock and match info -->
+
     </div>
-    <!-- The main body of the dashboard, by default contains the gyro monitor and the robot diagram -->
-    <article>
-        <!-- Gyroscope -->
-        <svg id="gyro">
-            <circle cx="85" cy="85" r="83" />
-            <circle cx="85" cy="85" r="50" />
-            <rect id="gyro-arm" x="80" y="5" width="10" height="80" />
-            <text id="gyro-number" x="90" y="115">0º</text>
-        </svg>
-        <!-- Example robot diagram, arm moves when encoder value changes -->
-        <svg id="robot-diagram" width="332" height="450">
-            <text x="40" y="340">Example SVG Robot Diagram</text>
-            <rect x="75" y="360" width="230" height="40" />
-            <rect x="85" y="370" width="210" height="40" />
-            <rect id="robot-arm" x="5" y="375" width="80" height="10" />
-            <circle cx="100" cy="410" r="25" />
-            <circle cx="260" cy="410" r="25" />
-            <rect x="60" y="380" width="250" height="30" />
-            <text x="185" y="405" id="team" text-anchor="middle">####</text>
-        </svg>
-    </article>
-    <!-- The sidebar of the dashboard. Designed for smaller control elements like selection boxes and small buttons. -->
-    <aside>
-        <!-- Example button which toggles /SmartDashboard/exampleValue NetworkTables value.
-            The <p> below then says the value. -->
-        <div id="example-section">
-            <button id="example-button">Change example value</button>
-            <p id="example-readout">Value is undefined</p>
+    <div layout="row" flex="grow"> <!--container for the rest of the UI -->
+      <div class="box" flex="grow"> <!--camera feed -->
+        <p ng-controller="testCtrl">{{text}}</p>
+      </div>
+      <div layout="column" flex="grow"> <!--container for controls/data -->
+        <div layout="row" flex="grow"><!-- -->
+          <div class="box" flex="grow"><!--match status -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
+          <div class="box" flex="grow"><!--orientation -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
         </div>
-        <!-- Autonomous selector -->
-        <div class="select-container">
-            <select id="auto-select">
-                <option>No auto modes found</option>
-                <!-- This gets populated by JS -->
-            </select>
+        <div layout="row" flex="grow"><!-- -->
+          <div class="box" flex="grow"><!--vision -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
+          <div class="box" flex="grow"><!--gear -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
+          <div class="box" flex="grow"><!--auto selector -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
         </div>
-        <div>
-            <p>Adjust arm height</p>
-            <input id="arm-position" type="range" min="0" max="1200" value="770">
+        <div layout="row" flex="grow"><!-- -->
+          <div class="box" flex="grow"><!--power usage -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
+          <div class="box" flex="grow"><!--sensors -->
+            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
         </div>
-    </aside>
-    <script src="/networktables/networktables.js"></script>
-    <script src="ui.js"></script>
+      </div>
+    </div>
+  </div>
+
+  <script src="/networktables/networktables.js"></script>
+  <script src="ui.js"></script>
+  <script>
+	  document.addEventListener("keydown", function (e) {
+		  if (e.which === 123) {
+	      require('remote').getCurrentWindow().toggleDevTools();
+		  } else if (e.which === 116) {
+		    location.reload();
+		  }
+	  });
+  </script>
 </body>
 
 </html>
