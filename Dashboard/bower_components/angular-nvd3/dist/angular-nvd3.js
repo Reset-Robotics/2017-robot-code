@@ -1,18 +1,10 @@
 /**************************************************************************
-* AngularJS-nvD3, v1.0.9; MIT
+* AngularJS-nvD3, v1.0.8; MIT
 * http://krispo.github.io/angular-nvd3
 **************************************************************************/
-(function(window){
+(function(){
 
     'use strict';
-    var nv = window.nv;
-
-    // Node.js or CommonJS
-    if (typeof(exports) !== 'undefined') {
-        /* jshint -W020 */
-        nv = require('nvd3');
-        /* jshint +W020 */
-    }
 
     angular.module('nvd3', [])
 
@@ -64,11 +56,8 @@
                         // Update chart layout (for example if container is resized)
                         update: function() {
                             if (scope.chart && scope.svg) {
-                                if (scope.options.chart.type === 'sunburstChart') {
-                                    scope.svg.datum(angular.copy(scope.data)).call(scope.chart);
-                                } else {
-                                    scope.svg.datum(scope.data).call(scope.chart);
-                                }
+                                scope.svg.datum(scope.data).call(scope.chart);
+                                // scope.chart.update();
                             } else {
                                 scope.api.refresh();
                             }
@@ -139,7 +128,6 @@
                                         'discretebar',
                                         'distX',
                                         'distY',
-                                        'focus',
                                         'interactiveLayer',
                                         'legend',
                                         'lines',
@@ -194,7 +182,11 @@
                             });
 
                             // Update with data
-                            scope.api.updateWithData();
+                            if (options.chart.type === 'sunburstChart') {
+                                scope.api.updateWithData(angular.copy(scope.data));
+                            } else {
+                                scope.api.updateWithData();
+                            }
 
                             // Configure wrappers
                             if (options['title'] || scope._config.extended) configureWrapper('title');
@@ -237,11 +229,7 @@
                         updateWithData: function (data){
                             // set data
                             if (!arguments.length) {
-                                if (scope.options.chart.type === 'sunburstChart') {
-                                    data = angular.copy(scope.data);
-                                } else {
-                                    data = scope.data;
-                                }
+                                data = scope.data;
                             } else {
                                 scope.data = data;
 
@@ -650,4 +638,4 @@
                 }
             };
         });
-})(window);
+})();

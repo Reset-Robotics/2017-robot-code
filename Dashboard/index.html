@@ -6,60 +6,301 @@
   <title>FRC Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css">
   <script src="bower_components/angular/angular.min.js"></script>
   <script src="bower_components/angular-animate/angular-animate.min.js"></script>
   <script src="bower_components/angular-aria/angular-aria.min.js"></script>
   <script src="bower_components/angular-material/angular-material.min.js"></script>
   <script src="bower_components/angular-messages/angular-messages.min.js"></script>
-  <script src="bower_components/angular-nvd3/dist/angular-nvd3.min.js"></script>
-  <script src="bower_components/d3/d3.min.js"></script>
-  <script src="bower_components/nvd3/build/nv.d3.min.js"></script>
+  <!--script src="bower_components/d3/d3.js"></script-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js"></script>
+  <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+  <script src="/networktables/networktables.js"></script>
+  <script src="ui.js"></script>
+  <script src="directives/compass.js"></script>
+  <script src="directives/circleChart.js"></script>
+  <script src="directives/barChart.js"></script>
 </head>
 
 <body>
 
-  <div class="background" layout="column" flex="grow"> <!-- -->
-    <div class="box" layout="row" flex="grow"> <!--clock and match info -->
-
+  <div ng-controller="uiCtrl" class="background" layout="column" layout-fill flex="grow"> <!-- -->
+    <div class="box" ng-controller="clockCtrl" layout="row" layout-align="space-between center" flex="10"> <!--clock and match info -->
+      <div class="clockText" flex>Robot Status: <em class="value">{{getStatus()}}</em></div>
+      <div class="clockText"flex>Match Time: <em class="value">{{getTime()}}</em></div>
     </div>
     <div layout="row" flex="grow"> <!--container for the rest of the UI -->
-      <div class="box" flex="grow"> <!--camera feed -->
-        <p ng-controller="testCtrl">{{text}}</p>
+      <div layout="column" class="box" flex="40"> <!--camera feed -->
+        <p class="title">Camera Feed</p>
       </div>
       <div layout="column" flex="grow"> <!--container for controls/data -->
-        <div layout="row" flex="grow"><!-- -->
-          <div class="box" flex="grow"><!--match status -->
-            <p ng-controller="testCtrl">{{text}}</p>
+        <div layout="row" flex="30"><!-- -->
+          <div class="box" layout="row" flex="grow">
+            <div ng-controller="compassCtrl" layout="column" flex><!--match status -->
+              <p class="title">Orientation</p>
+              <compass value="info.value" width="200" height="200"></compass>
+            </div>
+            <div class="row">
+              <p class="title">Angle Lock:</p>
+            <div layout="row">
+              <div layout="column">
+                <div class="touchButton">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">forward</p>
+                    <p class="buttonLabel">0°</p>
+                  </div>
+                </div>
+                <div class="touchButton">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">loading station</p>
+                    <p class="buttonLabel">45°</p>
+                  </div>
+                </div>
+              </div>
+              <div layout="column">
+                <div class="touchButton">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">right gear</p>
+                    <p class="buttonLabel">300°</p>
+                  </div>
+                </div>
+                <div class="touchButton">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">left gear</p>
+                    <p class="buttonLabel">60°</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="box" flex="grow"><!--orientation -->
-            <p ng-controller="testCtrl">{{text}}</p>
+          </div>
+          <div layout="column" class="box" flex="grow"><!--orientation -->
+            <p class="title"></p>
           </div>
         </div>
-        <div layout="row" flex="grow"><!-- -->
-          <div class="box" flex="grow"><!--vision -->
-            <p ng-controller="testCtrl">{{text}}</p>
+        <div layout="row" flex="40" style="height: 100%"><!-- -->
+          <div layout="column" class="box" flex="grow"><!--vision -->
+            <p class="title">Motors:</p>
+            <div layout="row" layout-align="none center" flex="grow">
+              <svg id="robotDiagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="330px" height="250px" viewBox="0 0 330 250" preserveAspectRatio="xMidYMid meet">
+                <defs id="svgEditorDefs">
+                  <marker id="arrow10-8-right" markerHeight="8" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="-3" refY="0" viewBox="-15 -5 20 20">
+                    <path d="M -15 -5 L 0 0 L -15 5 z" fill="#8D48AB" />
+                  </marker>
+                  <marker id="arrow20-16-left" markerHeight="16" markerUnits="strokeWidth" markerWidth="20" orient="auto" refX="3" refY="0" viewBox="0 -5 20 20">
+                    <path d="M 15 -5 L 0 0 L 15 5 z" fill="#8D48AB" />
+                  </marker>
+                  <marker id="circle8" markerHeight="8" markerUnits="strokeWidth" markerWidth="8" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+                    <circle cx="0" cy="0" fill="#8D48AB;stroke:none;" r="5" />
+                  </marker>
+                  <marker id="circle4" markerHeight="4" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+                    <circle cx="0" cy="0" r="5" style="fill:#8D48AB;stroke:none;" />
+                  </marker>
+                  <marker id="circle6" markerHeight="6" markerUnits="strokeWidth" markerWidth="6" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+                    <circle cx="0" cy="0" r="5" style="fill:#8D48AB;stroke:none;" />
+                  </marker>
+                </defs>
+                <rect x="10" y="10" stroke="white" id="noPurple1" style="stroke-width: 2px; fill-opacity: 0;" width="200" height="220" />
+                <g id="e390_group" transform="translate(5, 160)">
+                  <rect x="10" y="10" stroke="#8D48AB" id="e41_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+                  <line id="e231_line" x1="10" y1="30" x2="40" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e271_line" x1="10" y1="40" x2="40" y2="20" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e285_line" x1="10" y1="50" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e299_line" x1="10" y1="60" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e352_line" x1="10" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e366_line" x1="40" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                </g>
+                <line id="noPurple2" x1="50" y1="10" x2="50" y2="230" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <g id="e415_group" transform="translate(5, 10)">
+                  <rect x="10" y="10" stroke="#8D48AB" id="e415_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+                  <line id="e415_line" x1="10" y1="10" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e416_line" x1="10" y1="20" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e417_line" x1="10" y1="30" x2="40" y2="50" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e418_line" x1="10" y1="40" x2="40" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e419_line" x1="40" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e420_line" x1="10" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                </g>
+                <g id="e610_group" transform="translate(165, 160)">
+                  <rect x="10" y="10" stroke="#8D48AB" id="e610_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+                  <line id="e610_line" x1="10" y1="10" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e611_line" x1="10" y1="20" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e612_line" x1="10" y1="30" x2="40" y2="50" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e613_line" x1="10" y1="40" x2="40" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e614_line" x1="40" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e615_line" x1="10" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                </g>
+                <g id="e615_group" transform="translate(165, 10)" stroke="#8D48AB">
+                  <rect x="10" y="10" stroke="#8D48AB" id="e615_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+                  <line id="e616_line" x1="10" y1="30" x2="40" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e617_line" x1="10" y1="40" x2="40" y2="20" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e618_line" x1="10" y1="50" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e619_line" x1="10" y1="60" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e620_line" x1="10" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                  <line id="e621_line" x1="40" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                </g>
+                <line id="noPurple3" x1="170" y1="10" x2="170" y2="230.00000000000003" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple4" x1="50" y1="50" x2="170" y2="50" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple5" x1="60" y1="50" x2="60" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple6" x1="60" y1="20" x2="90" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple7" x1="160" y1="50" x2="160" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple8" x1="160" y1="20" x2="130" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <rect x="80" y="190" stroke="#8D48AB" id="e2265_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="60" height="30" />
+                <rect x="70" y="170" stroke="white" id="noPurple9" style="stroke-width: 2px; fill-opacity: 0;" width="5" height="50" />
+                <rect x="145" y="169.99999999999997" stroke="white" id="noPurple10" style="stroke-width: 2px; fill-opacity: 0;" width="5" height="50" />
+                <line id="noPurple12" x1="75" y1="205" x2="80" y2="205" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="noPurple11" x1="140" y1="205" x2="145" y2="205" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e2639_line" x1="270" y1="10" x2="320" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+                <line id="e2678_line" x1="270" y1="65" x2="320" y2="65" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+                <line id="e2690_line" x1="270" y1="120" x2="320" y2="120" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+                <line id="e2730_line" x1="270" y1="175" x2="320" y2="175" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+                <line id="e2742_line" x1="270" y1="230" x2="320" y2="230" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+                <line id="e2829_line" x1="190" y1="45" x2="235" y2="45" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="e2856_line" x1="235" y1="45" x2="270" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none; stroke-linecap: round;" />
+                <line id="e2883_line" x1="30" y1="45" x2="85" y2="100" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="e2897_line" x1="30" y1="195" x2="85" y2="140" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="e3015_line" x1="85" y1="100" x2="235" y2="100" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e3029_line" x1="85" y1="140" x2="250" y2="140" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e3108_line" x1="235" y1="100" x2="270" y2="65" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e3122_line" x1="250" y1="140" x2="270" y2="120" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e3188_line" x1="190" y1="195" x2="250" y2="195" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="e3293_line" x1="250" y1="195" x2="270" y2="175" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e4158_line" x1="110" y1="205" x2="145" y2="240" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="e4172_line" x1="145" y1="240" x2="260" y2="240" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+                <line id="e4186_line" x1="260" y1="240" x2="270" y2="230" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+              </svg>
+              <div id="motorCharts" layout="column" layout-align="none left">
+                <div class="motorContainer" layout="column">
+                  <p class="motorLabel">Front left wheel:</p>
+                  <bar-chart value="data.motors.motorFrontLeft" min="-1" max="1" width="200" height="20"></bar-chart>
+                </div>
+                <div class="motorContainer" layout="column">
+                  <p class="motorLabel">Front right wheel:</p>
+                  <bar-chart value="data.motors.motorFrontRight" min="-1" max="1" width="200" height="20"></bar-chart>
+                </div>
+                <div class="motorContainer" layout="column">
+                  <p class="motorLabel">Back left wheel:</p>
+                  <bar-chart value="data.motors.motorBackLeft" min="-1" max="1" width="200" height="20"></bar-chart>
+                </div>
+                <div class="motorContainer" layout="column">
+                  <p class="motorLabel">Back right wheel:</p>
+                  <bar-chart value="data.motors.motorBackRight" min="-1" max="1" width="200" height="20"></bar-chart>
+                </div>
+                <div class="motorContainer" layout="column">
+                  <p class="motorLabel">Climber motor:</p>
+                  <bar-chart value="data.motors.climberMotor" min="-1" max="1" width="200" height="20"></bar-chart>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="box" flex="grow"><!--gear -->
-            <p ng-controller="testCtrl">{{text}}</p>
-          </div>
-          <div class="box" flex="grow"><!--auto selector -->
-            <p ng-controller="testCtrl">{{text}}</p>
+          <div layout="column" class="box" flex="grow"><!--auto selector -->
+            <p class="title">Autonomous Mode:</p>
+            <div layout="column" flex="grow">
+              <svg id="autoDiagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500px" height="225px" viewBox="0 0 500 220" preserveAspectRatio="xMidYMid meet">
+                <defs id="svgEditorDefs">
+                  <marker id="circle4" markerHeight="4" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+                    <circle cx="0" cy="0" r="5" style="fill:white;stroke:none;" />
+                  </marker>
+                  <marker id="arrow20-16-right" markerHeight="16" markerUnits="strokeWidth" markerWidth="20" orient="auto" refX="-3" refY="0" viewBox="-15 -5 20 20">
+                    <path d="M -15 -5 L 0 0 L -15 5 z" fill="white" />
+                  </marker>
+                  <marker id="arrow10-8-right" markerHeight="8" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="-3" refY="0" viewBox="-15 -5 20 20">
+                    <path d="M -15 -5 L 0 0 L -15 5 z" fill="white" />
+                  </marker>
+                  <marker id="arrow8-6-right" markerHeight="6" markerUnits="strokeWidth" markerWidth="8" orient="auto" refX="-3" refY="0" viewBox="-15 -5 20 20">
+                    <path d="M -15 -5 L 0 0 L -15 5 z" fill="white" />
+                  </marker>
+                  <marker id="arrow10-8-left" markerHeight="8" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="3" refY="0" viewBox="0 -5 20 20">
+                    <path d="M 15 -5 L 0 0 L 15 5 z" fill="white" />
+                  </marker>
+                </defs>
+                <line id="left1" x1="240" y1="220" x2="240" y2="170" stroke="white" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="straight" x1="120" y1="220" x2="120" y2="120" stroke="white" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;); marker-end: url(&quot;#arrow10-8-right&quot;);" />
+                <line id="right1" x1="480" y1="220" x2="480" y2="170" stroke="white" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+                <line id="middle" x1="360" y1="220" x2="360" y2="145" stroke="white" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;); marker-end: url(&quot;#arrow10-8-right&quot;);" />
+                <line id="e383_line" x1="330" y1="120" x2="390" y2="120" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e424_line" x1="330" y1="120" x2="288" y2="78" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e438_line" x1="390" y1="120" x2="432" y2="78" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="left2" x1="240" y1="170" x2="290" y2="120" stroke="white" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#arrow10-8-right&quot;);" />
+                <line id="right2" x1="480" y1="170" x2="430" y2="120" stroke="white" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#arrow10-8-right&quot;);" />
+                <line id="e793_line" x1="310" y1="100" x2="300" y2="110" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e808_line" x1="410" y1="100" x2="420" y2="110" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e822_line" x1="360" y1="120" x2="360" y2="130" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e849_line" x1="330" y1="120" x2="320" y2="143" stroke="white" style="stroke-width: 2px; fill: none;" />
+                <line id="e863_line" x1="390" y1="120" x2="400" y2="143" stroke="white" style="stroke-width: 2px; fill: none;" />
+              </svg>
+              <div layout="row" layout-align="center">
+                <div class="touchButton2">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">straight forward</p>
+                  </div>
+                </div>
+                <div class="touchButton2">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">left gear</p>
+                  </div>
+                </div>
+                <div class="touchButton2">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">center gear</p>
+                  </div>
+                </div>
+                <div class="touchButton2">
+                  <div layout="column" layout-align="center center">
+                    <p class="buttonLabel">right gear</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div layout="row" flex="grow"><!-- -->
-          <div class="box" flex="grow"><!--power usage -->
-            <p ng-controller="testCtrl">{{text}}</p>
-          </div>
-          <div class="box" flex="grow"><!--sensors -->
-            <p ng-controller="testCtrl">{{text}}</p>
+        <div layout="row" flex="30"><!-- -->
+          <div layout="column" class="box" flex="grow"><!--power usage -->
+
+            <div layout="row" flex>
+
+              <div layout="column" layout-align="center stretch" >
+                <div class="minibox" flex layout="column" layout-align="space-around center">
+                  <p class="label">Battery Voltage:</p>
+                  <circle-chart class="circleChart" value="data.power.batteryVoltage" unit="v" min="0" max="12" width="100" height="100"></circle-chart>
+                </div>
+
+                <div class="minibox2" flex layout="column" layout-align="space-around center">
+                  <p class="label">Power Draw:</p>
+                  <circle-chart class="circleChart" value="data.power.totalPowerUse" unit="A" min="0" max="40" width="100" height="100"></circle-chart>
+                </div>
+              </div>
+
+              <div layout="column" layout-align="center stretch" >
+                <div class="minibox2" flex layout="column" layout-align="space-around center">
+                  <p class="label">RIO CPU use:</p>
+                  <circle-chart class="circleChart" value="data.power.RioCpu" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
+                </div>
+
+                <div class="minibox" flex layout="column" layout-align="space-around center">
+                  <p class="label">RIO RAM use:</p>
+                  <circle-chart class="circleChart" value="data.power.RioRam" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
+                </div>
+              </div>
+
+              <div class="b-box2" layout="column">
+                <p class="heading">Power usage by device:</p>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front left wheel</p><bar-chart value="data.power.powerFrontLeft" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front right wheel</p><bar-chart value="data.power.powerFrontRight" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back left wheel</p><bar-chart value="data.power.powerBackLeft" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back right wheel</p><bar-chart value="data.power.powerBackRight" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">climber motor</p><bar-chart value="data.power.powerClimber" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">RoboRIO</p><bar-chart value="data.power.powerRio" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">Jetson</p><bar-chart value="data.power.powerJetson" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">PCM</p><bar-chart value="data.power.powerPcm" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">LEDs</p><bar-chart value="data.power.powerLed" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <script src="/networktables/networktables.js"></script>
-  <script src="ui.js"></script>
   <script>
 	  document.addEventListener("keydown", function (e) {
 		  if (e.which === 123) {

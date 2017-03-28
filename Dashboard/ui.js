@@ -1,5 +1,5 @@
 
-var app = angular.module("Dashboard", ['ngMaterial']);
+var app = angular.module("Dashboard", ['ngMaterial', 'nvd3']);
 
 app.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -20,11 +20,11 @@ app.factory('updateService', function(){
 			autoAlignPickup: false,
 			autoAlignGear: false
 		},
-		drivetrain: {
-			motorFrontLeft: 0,
-			motorBackLeft: 0,
-			motorBackRight: 0,
-			motorFrontRight: 0,
+		motors: {
+			motorFrontLeft: 1,
+			motorBackLeft: 1,
+			motorBackRight: -1,
+			motorFrontRight: -1,
 			encoderFrontLeft: 0,
 			encoderBackLeft: 0,
 			encoderBackRight: 0,
@@ -39,16 +39,19 @@ app.factory('updateService', function(){
 			isOpen: false
 		},
 		power: {
-			batteryVoltage: 0,
-			totalPowerUse: 0,
-			powerFrontLeft: 0,
-			powerBackLeft: 0,
-			powerBackRight: 0,
-			powerFrontRight: 0,
+			batteryVoltage: 10.8,
+			totalPowerUse: 28.6,
+			powerFrontLeft: 12.4,
+			powerBackLeft: 7,
+			powerBackRight: 9,
+			powerFrontRight: 10,
 			powerClimber: 0,
-			powerRio: 0,
-			powerJetson: 0,
-			powerLed: 0,
+			powerRio: 0.8,
+			powerJetson: 2.3,
+			powerLed: 1.4,
+      powerPcm: 0,
+      RioCpu: 86,
+      RioRam: 34
 		},
 		match: {
 			time: 0,
@@ -58,7 +61,7 @@ app.factory('updateService', function(){
 
 		},
 		sensors: {
-			gyroAngle: 0,
+			gyroAngle: 1,
 			ultrasonic1: 0,
 			ultrasonic2: 0
 		},
@@ -77,6 +80,21 @@ app.factory('updateService', function(){
 		NetworkTables.getValue(key);
 	};
 
+  updateService.getProperty = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('/');
+    for (var i = 0, n = a.length - 1; i < n; ++i) {
+      var k = a[i];
+      if (k in o) {
+        o = o[k];
+      } else {
+        return;
+      }
+    }
+    return o;
+  };
+
 	updateService.onValueChanged = function(key, value, isNew){
 		if (value == 'true') {
 			value = true;
@@ -84,9 +102,8 @@ app.factory('updateService', function(){
 			value = false;
 		}
 
-		switch(key){
-
-		}
+    var a = key.split('/');
+    updateService.getProperty(updateService.data, key)[a[a.length - 1]] = value;
 	};
 
 	updateService.onConnection = function(connected){
@@ -99,6 +116,38 @@ app.factory('updateService', function(){
 	return updateService;
 });
 
-app.controller("testCtrl", function($scope){
-	$scope.text = "hello";
+app.controller('uiCtrl', function($scope, updateService){
+  $scope.data = updateService.data;
+
+  /*$scope.data.power.batteryVoltage = 10.3;
+  $scope.data.power.totalPowerUse = 20.6;
+  $scope.data.power.powerFrontLeft = 18;
+  $scope.data.power.powerFrontright = 3;
+  $scope.data.power.powerBackRight = 15;
+  $scope.data.power.powerBackLeft = 4;*/
+
+});
+
+app.controller('clockCtrl', function($scope, updateService){
+  var data = updateService.data;
+  $scope.data = data;
+
+  $scope.getTime = function(){
+    var minutes = data.match.time / 60;
+    var seconds = data.match.time % 60;
+
+    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  };
+  $scope.getStatus = function(){
+    if(data.connected)
+      return 'connected';
+    else
+      return 'disconnected';
+  };
+});
+
+app.controller('compassCtrl', function($scope, updateService){
+  $scope.info = {
+    value: 1
+  };
 });
