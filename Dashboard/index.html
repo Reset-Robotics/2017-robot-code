@@ -12,6 +12,7 @@
   <script src="bower_components/angular-aria/angular-aria.min.js"></script>
   <script src="bower_components/angular-material/angular-material.min.js"></script>
   <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+  <!--script src="bower_components/angular-touch/angular-touch.min.js"></script-->
   <!--script src="bower_components/d3/d3.js"></script-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js"></script>
@@ -27,59 +28,103 @@
 
   <div ng-controller="uiCtrl" class="background" layout="column" layout-fill flex="grow"> <!-- -->
     <div class="box" ng-controller="clockCtrl" layout="row" layout-align="space-between center" flex="10"> <!--clock and match info -->
-      <div class="clockText" flex>Robot Status: <em class="value">{{getStatus()}}</em></div>
-      <div class="clockText"flex>Match Time: <em class="value">{{getTime()}}</em></div>
+      <div class="clockText" flex>Robot Status: <span class="value">{{getStatus()}}</span></div>
+      <div class="clockText"flex>Match Time: <span class="value">{{getTime()}}</span></div>
     </div>
     <div layout="row" flex="grow"> <!--container for the rest of the UI -->
-      <div layout="column" class="box" flex="40"> <!--camera feed -->
-        <p class="title">Camera Feed</p>
-      </div>
-      <div layout="column" flex="grow"> <!--container for controls/data -->
-        <div layout="row" flex="30"><!-- -->
-          <div class="box" layout="row" flex="grow">
-            <div ng-controller="compassCtrl" layout="column" flex><!--match status -->
-              <p class="title">Orientation</p>
-              <compass value="info.value" width="200" height="200"></compass>
-            </div>
-            <div class="row">
-              <p class="title">Angle Lock:</p>
-            <div layout="row">
-              <div layout="column">
-                <div class="touchButton">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">forward</p>
-                    <p class="buttonLabel">0°</p>
-                  </div>
+      <div layout="column" flex="40"> <!--camera feed -->
+        <div layout="column" class="box" flex="66"> <!--camera feed -->
+          <p class="title">Camera Feed</p>
+        </div>
+        <div layout="row" flex="33"><!-- -->
+          <div layout="column" class="box" style="width: 280px;"><!--power usage -->
+            <div layout="row" flex="grow">
+              <div layout="column" flex="grow" layout-align="center stretch" >
+                <div class="minibox" flex layout="column" layout-align="space-around center">
+                  <p class="label">Battery Voltage:</p>
+                  <circle-chart class="circleChart" value="data.power.batteryVoltage" unit="v" min="0" max="12" width="100" height="100"></circle-chart>
                 </div>
-                <div class="touchButton">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">loading station</p>
-                    <p class="buttonLabel">45°</p>
-                  </div>
+
+                <div class="minibox2" flex layout="column" layout-align="space-around center">
+                  <p class="label">Power Draw:</p>
+                  <circle-chart class="circleChart" value="data.power.totalPowerUse" unit="A" min="0" max="40" width="100" height="100"></circle-chart>
                 </div>
               </div>
-              <div layout="column">
-                <div class="touchButton">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">right gear</p>
-                    <p class="buttonLabel">300°</p>
-                  </div>
+
+              <div layout="column" flex="grow" layout-align="center stretch" >
+                <div class="minibox2" flex layout="column" layout-align="space-around center">
+                  <p class="label">RIO CPU use:</p>
+                  <circle-chart class="circleChart" value="data.power.RioCpu" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
                 </div>
-                <div class="touchButton">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">left gear</p>
-                    <p class="buttonLabel">60°</p>
-                  </div>
+
+                <div class="minibox" flex layout="column" layout-align="space-around center">
+                  <p class="label">RIO RAM use:</p>
+                  <circle-chart class="circleChart" value="data.power.RioRam" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
                 </div>
               </div>
             </div>
           </div>
-          </div>
-          <div layout="column" class="box" flex="grow"><!--orientation -->
-            <p class="title"></p>
+          <div class="box" layout="column" flex="grow">
+            <p class="title">Power usage by device:</p>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front left wheel</p><bar-chart value="data.power.powerFrontLeft" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front right wheel</p><bar-chart value="data.power.powerFrontRight" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back left wheel</p><bar-chart value="data.power.powerBackLeft" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back right wheel</p><bar-chart value="data.power.powerBackRight" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">climber motor</p><bar-chart value="data.power.powerClimber" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">RoboRIO</p><bar-chart value="data.power.powerRio" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">Jetson</p><bar-chart value="data.power.powerJetson" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">PCM</p><bar-chart value="data.power.powerPcm" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
+            <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">LEDs</p><bar-chart value="data.power.powerLed" min="0" max="20" width="300" height="20" unit="A"></bar-chart></div>
           </div>
         </div>
-        <div layout="row" flex="40" style="height: 100%"><!-- -->
+      </div>
+      <div layout="column" flex="grow"> <!--container for controls/data -->
+        <div layout="row" flex=""><!-- -->
+          <div class="box" layout="row" flex="20">
+            <div ng-controller="compassCtrl" layout="column" flex layout-align="center center"><!--match status -->
+              <p class="title">Orientation</p>
+              <compass value="info.value" width="200" height="200"></compass>
+              <p class="subTitle">Gyro angle: <span class="value">{{data.sensors.gyroAngle}}</span></p>
+            </div>
+          </div>
+          <div layout="column" class="box" flex="80"><!--orientation -->
+            <!--p class="title">Commands</p-->
+            <div layout="row" flex="grow" layout-align="space-around space-around">
+              <div ng-controller="angleLockCtrl" layout="column" layout-align="center center">
+                <p class="subTitle">Angle Lock:</p>
+                <div layout="column" flex layout-align="center center">
+                  <md-button class="md-raised md-primary touchButton" ng-class="{buttonSelected: info.selected == 'off'}" ng-mouseenter="select('off')">unlock angle</md-button>
+                  <div layout="row" flex layout-align="center center">
+                    <md-button class="md-raised md-primary touchButton" ng-class="{buttonSelected: info.selected == 'left'}" ng-mouseenter="select('left')">left gear</md-button>
+                    <md-button class="md-raised md-primary touchButton" ng-class="{buttonSelected: info.selected == 'right'}" ng-mouseenter="select('right')">right gear</md-button>
+                  </div>
+                  <div layout="row" flex layout-align="center center">
+                    <md-button class="md-raised md-primary touchButton" ng-class="{buttonSelected: info.selected == 'forward'}" ng-mouseenter="select('forward')"><div class="buttonText">straight<br>forward</div></md-button>
+                    <md-button class="md-raised md-primary touchButton" ng-class="{buttonSelected: info.selected == 'loading'}" ng-mouseenter="select('loading')"><div class="buttonText">loading<br>station</div></md-button>
+                  </div>
+                </div>
+              </div>
+              <div layout="column" layout-align="center center">
+                <div ng-controller="fieldOrientedCtrl">
+                  <p class="subTitle">field oriented drive:</p>
+                  <div layout="row" layout-align="center">
+                    <md-button class="md-raised md-primary touchButton left" ng-class="{buttonSelected: info.fieldOriented}" ng-mouseenter="toggleFieldOriented()">on</md-button>
+                    <md-button class="md-raised md-primary touchButton right" ng-class="{buttonSelected: !info.fieldOriented}" ng-mouseenter="toggleFieldOriented()">off</md-button>
+                  </div>
+                </div>
+                <md-button class="md-raised md-primary touchButton">reset gyro</md-button>
+              </div>
+              <div ng-controller="autoGearCtrl" layout="column" layout-align="center center">
+                <p class="subTitle">Gear peg: 
+                  <br>
+                  <span class="value">In range</span>
+                </p>
+                <md-button class="md-raised md-primary touchButton"><div class="buttonText">auto-place<br>gear</div></md-button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div layout="row" flex="" style="height: 100%"><!-- -->
           <div layout="column" class="box" flex="grow"><!--vision -->
             <p class="title">Motors:</p>
             <div layout="row" layout-align="none center" flex="grow">
@@ -193,7 +238,7 @@
               </div>
             </div>
           </div>
-          <div layout="column" class="box" flex="grow"><!--auto selector -->
+          <div ng-controller="autoCtrl" layout="column" class="box" flex="grow"><!--auto selector -->
             <p class="title">Autonomous Mode:</p>
             <div layout="column" flex="grow">
               <svg id="autoDiagram" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500px" height="225px" viewBox="0 0 500 220" preserveAspectRatio="xMidYMid meet">
@@ -230,73 +275,95 @@
                 <line id="e863_line" x1="390" y1="120" x2="400" y2="143" stroke="white" style="stroke-width: 2px; fill: none;" />
               </svg>
               <div layout="row" layout-align="center">
-                <div class="touchButton2">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">straight forward</p>
-                  </div>
-                </div>
-                <div class="touchButton2">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">left gear</p>
-                  </div>
-                </div>
-                <div class="touchButton2">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">center gear</p>
-                  </div>
-                </div>
-                <div class="touchButton2">
-                  <div layout="column" layout-align="center center">
-                    <p class="buttonLabel">right gear</p>
-                  </div>
-                </div>
+                <md-button class="md-raised md-primary touchButton autoSelector" ng-class="{buttonSelected: info.selected == 'forward'}" ng-mouseenter="select('forward')">baseline</md-button>
+                <md-button class="md-raised md-primary touchButton autoSelector" ng-class="{buttonSelected: info.selected == 'left'}" ng-mouseenter="select('left')">left gear</md-button>
+                <md-button class="md-raised md-primary touchButton autoSelector" ng-class="{buttonSelected: info.selected == 'center'}" ng-mouseenter="select('center')">center gear</md-button>
+                <md-button class="md-raised md-primary touchButton autoSelector" ng-class="{buttonSelected: info.selected == 'right'}" ng-mouseenter="select('right')">right gear</md-button>
               </div>
             </div>
           </div>
         </div>
-        <div layout="row" flex="30"><!-- -->
-          <div layout="column" class="box" flex="grow"><!--power usage -->
-
-            <div layout="row" flex>
-
-              <div layout="column" layout-align="center stretch" >
-                <div class="minibox" flex layout="column" layout-align="space-around center">
-                  <p class="label">Battery Voltage:</p>
-                  <circle-chart class="circleChart" value="data.power.batteryVoltage" unit="v" min="0" max="12" width="100" height="100"></circle-chart>
-                </div>
-
-                <div class="minibox2" flex layout="column" layout-align="space-around center">
-                  <p class="label">Power Draw:</p>
-                  <circle-chart class="circleChart" value="data.power.totalPowerUse" unit="A" min="0" max="40" width="100" height="100"></circle-chart>
-                </div>
+        <div layout="row" flex="25">
+          <div class="box" layout="row" layout-align="center stretch" flex="45">
+            <div layout="column" layout-align="center stretch" flex="grow">
+              <div class="b-box1" layout-align="center center" flex="50">
+                <p>Left ultrasonic distance</p>
+                <p class="value">43cm</p>
               </div>
-
-              <div layout="column" layout-align="center stretch" >
-                <div class="minibox2" flex layout="column" layout-align="space-around center">
-                  <p class="label">RIO CPU use:</p>
-                  <circle-chart class="circleChart" value="data.power.RioCpu" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
-                </div>
-
-                <div class="minibox" flex layout="column" layout-align="space-around center">
-                  <p class="label">RIO RAM use:</p>
-                  <circle-chart class="circleChart" value="data.power.RioRam" unit="%" min="0" max="100" width="100" height="100"></circle-chart>
-                </div>
+              <div class="b-box2" layout-align="center center" flex="50">
+                <p>vision target displacement</p>
+                <p class="value">-34.6</p>
               </div>
-
-              <div class="b-box2" layout="column">
-                <p class="heading">Power usage by device:</p>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front left wheel</p><bar-chart value="data.power.powerFrontLeft" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">front right wheel</p><bar-chart value="data.power.powerFrontRight" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back left wheel</p><bar-chart value="data.power.powerBackLeft" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">back right wheel</p><bar-chart value="data.power.powerBackRight" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">climber motor</p><bar-chart value="data.power.powerClimber" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">RoboRIO</p><bar-chart value="data.power.powerRio" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">Jetson</p><bar-chart value="data.power.powerJetson" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">PCM</p><bar-chart value="data.power.powerPcm" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
-                <div class="powerChart" layout="row" layout-align="center center"><p class="powerLabel">LEDs</p><bar-chart value="data.power.powerLed" min="0" max="20" width="250" height="20" unit="A"></bar-chart></div>
+            </div>
+            <div layout="column" layout-align="center stretch" flex="grow">
+              <div class="b-box2" layout-align="center center" flex="50">
+                <p>right ultrasonic distance</p>
+                <p class="value">32cm</p>
+              </div>
+              <div class="b-box1" layout-align="center center" flex="50">
+                <p>gyro angle</p>
+                <p class="value"><br>42</p>
+              </div>
+            </div>
+            <div layout="column" layout-align="center stretch" flex="grow">
+              <div class="b-box1" layout-align="center center" flex="50">
+                <p>front left<br>encoder</p>
+                <p class="value">46rpm</p>
+              </div>
+              <div class="b-box2" layout-align="center center" flex="50">
+                <p>back left<br>encoder</p>
+                <p class="value">46rpm</p>
+              </div>
+            </div>
+            <div layout="column" layout-align="center stretch" flex="grow">
+              <div class="b-box2" layout-align="center center" flex="50">
+                <p>front right encoder</p>
+                <p class="value">46rpm</p>
+              </div>
+              <div class="b-box1" layout-align="center center" flex="50">
+                <p>back right encoder</p>
+                <p class="value">46rpm</p>
               </div>
             </div>
           </div>
+          <div class="box" layout="row" flex="55">
+            <div layout="column" flex="50">
+              <p class="title">Settings:</p>
+              <div layout="row" layout-align="start stretch">
+                <div layout="column" layout-align="space-around start">
+                  <md-checkbox class="md-primary">Angle lock disables F.O.D</md-checkbox>
+                  <md-checkbox class="md-primary">Remember F.O.D state</md-checkbox>
+                  <md-checkbox class="md-primary">Automatically lock onto peg</md-checkbox>
+                  <md-checkbox class="md-primary">Use gear pusher</md-checkbox>
+                  <md-checkbox class="md-primary">Fancy autonomous</md-checkbox>
+                </div>
+              </div>
+            </div>
+            <div layout="column" layout-align="space-between stretch" flex="50">
+                <md-slider-container layout="row" layout-align="space-between center" flex="grow">
+                  <span>Throttle</span>
+                  <md-slider flex min="0" max="100" class="md-primary"></md-slider>
+                  <md-input-container>
+                    <input  type="number">
+                  </md-input-container>
+                </md-slider-container>
+                <md-slider-container layout="row" layout-align="space-between center" flex="grow">
+                  <span>Gyro sensitivity</span>
+                  <md-slider flex min="0" max="100" class="md-primary"></md-slider>
+                  <md-input-container>
+                    <input  type="number">
+                  </md-input-container>
+                </md-slider-container>
+                <md-slider-container layout="row" layout-align="space-between center" flex="grow">
+                  <span>Vision sensitivity</span>
+                  <md-slider flex min="0" max="100" class="md-primary"></md-slider>
+                  <md-input-container>
+                    <input  type="number">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>

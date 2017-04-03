@@ -1,7 +1,7 @@
 {
-  "name": "angular",
+  "name": "angular-touch",
   "version": "1.6.4",
-  "description": "HTML enhanced for web apps",
+  "description": "AngularJS module for touch events and helpers for touch-enabled devices",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,6 +14,7 @@
     "angular",
     "framework",
     "browser",
+    "touch",
     "client-side"
   ],
   "author": "Angular Core Team <angular-core+npm@google.com>",
@@ -21,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/angular/angular.js/issues"
   },
-  "homepage": "http://angularjs.org"
+  "homepage": "http://angularjs.org",
+  "jspm": {
+    "shim": {
+      "angular-touch": {
+        "deps": ["angular"]
+      }
+    }
+  }
 }

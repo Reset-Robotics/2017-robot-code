@@ -44,7 +44,7 @@ angular.module('Dashboard').directive("circleChart", function() {
       var midColor = '#7B67B7';
       var endColor = '#8D48AB';
       var backgroundColor = '#21323A';
-      var thickness = 0.2;
+      var thickness = 0.1;
 
       function drawGraph(value, min, max) {
         var inner = thickness * maxRadius;

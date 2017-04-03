@@ -2,8 +2,33 @@
 var app = angular.module("Dashboard", ['ngMaterial', 'nvd3']);
 
 app.config(function($mdThemingProvider) {
-  $mdThemingProvider.theme('default')
-    .dark();
+
+	$mdThemingProvider.definePalette('purple', {
+    '50': '8D48AB',
+    '100': '8D48AB',
+    '200': '8D48AB',
+    '300': '8D48AB',
+    '400': '8D48AB',
+    '500': '8D48AB',
+    '600': '8D48AB',
+    '700': '8D48AB',
+    '800': '8D48AB',
+    '900': '8D48AB',
+    'A100': '8D48AB',
+    'A200': '8D48AB',
+    'A400': '8D48AB',
+    'A700': '8D48AB',
+    'contrastDefaultColor': 'light',    // whether, by default, text (contrast)
+                                        // on this palette should be dark or light
+
+    'contrastDarkColors': ['50', '100', //hues which contrast should be 'dark' by default
+     '200', '300', '400', 'A100'],
+    'contrastLightColors': undefined    // could also specify this if default was 'dark'
+  });
+
+	$mdThemingProvider.theme('default')
+		.dark()
+		.primaryPalette('purple');
 });
 
 app.factory('updateService', function(){
@@ -61,7 +86,7 @@ app.factory('updateService', function(){
 
 		},
 		sensors: {
-			gyroAngle: 1,
+			gyroAngle: 42,
 			ultrasonic1: 0,
 			ultrasonic2: 0
 		},
@@ -146,8 +171,44 @@ app.controller('clockCtrl', function($scope, updateService){
   };
 });
 
+app.controller('angleLockCtrl', function($scope, updateService){
+	$scope.info = {
+		selected: 'off'
+	};
+
+	$scope.select = function(name){
+		$scope.info.selected = name;
+	};
+});
+
+app.controller('fieldOrientedCtrl', function($scope, updateService){
+	$scope.info = {
+		fieldOriented: true
+	};
+
+	$scope.toggleFieldOriented = function(){
+		$scope.info.fieldOriented = !$scope.info.fieldOriented;
+	};
+});
+
+app.controller('autoCtrl', function($scope, updateService){
+	$scope.info = {
+		selected: 'forward'
+	};
+
+	$scope.select = function(name){
+		$scope.info.selected = name;
+	};
+});
+
+app.controller('autoGearCtrl', function($scope, updateService){
+		$scope.info = {
+
+		};
+});
+
 app.controller('compassCtrl', function($scope, updateService){
   $scope.info = {
-    value: 1
+    value: updateService.data.sensors.gyroAngle * Math.PI / 180
   };
 });

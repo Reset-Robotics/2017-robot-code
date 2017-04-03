@@ -26,11 +26,13 @@
 .b-box1{
   background-color: #2B3A42;
   border-radius: 0px;
+  text-align: center;
 }
 
 .b-box2{
   background-color: #303F46;
   border-radius: 0px;
+  text-align: center;
 }
 
 .circleChart{
@@ -52,6 +54,14 @@
 .title{
   font-size: 2em;
   text-align: left;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.subTitle{
+  font-size: 1.5em;
+  text-align: center;
   margin-left: 5px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -113,11 +123,36 @@
 }
 
 .touchButton{
-  height: 50px;
+  /*padding: 20px 6px 20px 6px !important;*/
+  line-height: 5px;
+  height: 80px;
   width: 120px;
-  margin: 5px;
-  padding: 10px;
-  background-color: #303F46;
+  margin: 5;
+  background-color: #303F46 !important;
+}
+
+.touchButton.left{
+  width: 80px;
+  margin-right: 0px;
+  border-radius: 3px 0 0 3px;
+}
+
+.touchButton.right{
+  width: 80px;
+  margin-left: 0px;
+  border-radius: 0 3px 3px 0;
+}
+
+.touchButton.autoSelector{
+  width: 120px;
+}
+
+.buttonSelected{
+  background-color: #8D48AB !important;
+}
+
+.buttonText{
+  line-height: 15px;
 }
 
 .touchButton2{
@@ -126,4 +161,12 @@
   margin: 5px;
   padding: 10px;
   background-color: #303F46;
+}
+
+md-checkbox{
+  margin-left: 5px !important;
+}
+
+md-input-container{
+  width: 150px;
 }
