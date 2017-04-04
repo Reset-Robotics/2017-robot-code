@@ -22,7 +22,7 @@ int main() {
 
 	zmq::context_t context (1);
 	zmq::socket_t publisher(context, ZMQ_PUB);
-	publisher.bind("tcp://*:5556");
+	publisher.bind("tcp://*:5801"); // Available ports are 1180-1190 and 5800 to 5810. Do not use 1181.
 
 	std::cout << "starting server\n";
 
