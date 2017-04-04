@@ -1,0 +1,3 @@
+//home/ubuntu/ahoy/build/CMakeFiles/edit_cache.dir
+//home/ubuntu/ahoy/build/CMakeFiles/rebuild_cache.dir
+//home/ubuntu/ahoy/build/CMakeFiles/ahoy22.dir

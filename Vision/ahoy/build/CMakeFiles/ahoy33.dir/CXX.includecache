@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ubuntu/ahoy/LiftTracker.cpp
+LiftTracker.h
+/home/ubuntu/ahoy/LiftTracker.h
+
+/home/ubuntu/ahoy/LiftTracker.h
+opencv2/objdetect/objdetect.hpp
+-
+opencv2/highgui/highgui.hpp
+-
+opencv2/imgproc/imgproc.hpp
+-
+opencv2/core/core.hpp
+-
+opencv2/features2d.hpp
+-
+iostream
+-
+stdio.h
+-
+stdlib.h
+-
+map
+-
+vector
+-
+string
+-
+math.h
+-
+
