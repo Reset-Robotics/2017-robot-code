@@ -57,7 +57,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	the position that it isn't. In the event that the position that it is in is not the position that it 
 	wasn't, the system has acquired a variation, the variation being the difference between 
 	where the robot is, and where it wasn't. If variation is considered to be a significant factor, it 
-	too may be corrected by the GEA. However, the robot must also know where it was.The 
+	too may be corrected by the NavX. However, the robot must also know where it was.The 
 	robot guidance computer scenario works as follows. Because a variation has modified some 
 	of the information the robot has obtained, it is not sure just where it is. However, it is sure 
 	where it isn't, within reason, and it knows where it was. It now subtracts where it should be 

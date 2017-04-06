@@ -9,7 +9,7 @@ public class Test {
 		
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 		
-		subscriber.connect("tcp://raspberrypi.local:5556");
+		subscriber.connect("tcp://localhost:5556");
 		
 		String filter = "displacement";
 		subscriber.subscribe(filter.getBytes());
@@ -17,12 +17,26 @@ public class Test {
 		while(true){
 			String data = subscriber.recvStr(0).trim();
 			
-			StringTokenizer scan = new StringTokenizer(data, " ");
+			String[] strings = data.split(" ");
 			
-			String str = scan.nextToken();
-			String num = scan.nextToken();
+			String str = strings[1].trim().replaceAll("[^\\d|\\.|-]", "");
+			//double num = Double.parseDouble(strings[1].trim());
+			double num = Double.parseDouble(str);
 			
 			System.out.println("Data Recieved" + " : " + num);
+			
+			//System.out.println(str + " : " + str.length());
+			
+			/*for(int i = 0; i < str.length(); i++){
+				char ch = str.charAt(i);
+				System.out.println(ch);
+			}*/
+			
+			/*try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
 		}
 	}
 }

@@ -9,7 +9,9 @@ public class GearMechanism extends Subsystem {
 
 	Compressor compressor = new Compressor(21);
 	
-	DoubleSolenoid piston = new DoubleSolenoid(21, 0, 1);
+	DoubleSolenoid leftPiston = new DoubleSolenoid(21, 0, 1);
+	DoubleSolenoid rightPiston = new DoubleSolenoid(21, 2, 3);
+	DoubleSolenoid pusher = new DoubleSolenoid(21, 4, 5);
 	
 	public void init(){
 		compressor.setClosedLoopControl(true);
@@ -17,15 +19,24 @@ public class GearMechanism extends Subsystem {
 	}
 	
 	public void open(){
-		piston.set(DoubleSolenoid.Value.kReverse);
+		leftPiston.set(DoubleSolenoid.Value.kReverse);
+		rightPiston.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	public void close(){
-		piston.set(DoubleSolenoid.Value.kForward);
+		leftPiston.set(DoubleSolenoid.Value.kForward);
+		rightPiston.set(DoubleSolenoid.Value.kForward);
+	}
+	
+	public void extendPusher(){
+		pusher.set(DoubleSolenoid.Value.kForward);
+	}
+	public void retractPusher(){
+		pusher.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	public String getValue() {
-		Value val = piston.get();
+		Value val = leftPiston.get();
 		
 		if(val == Value.kForward){
 			return "Closed";

@@ -42,6 +42,7 @@ public class RobotMap {
 	
 	public static String networkTableName = "LiftTracker"; //the name of the NetworkTable the jetson is sending data to
 	public static String distanceValueName = "CenterDist"; //the name of the variable that contains the peg distance
+	public static String jetsonIP = "00.00.00.00";
 	
 	
 	public static Map<Double, Double> shooterAngles = new HashMap<Double, Double>();

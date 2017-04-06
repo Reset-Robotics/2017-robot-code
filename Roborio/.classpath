@@ -2,14 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="build/jars/WPILib.jar"/>
-	<classpathentry kind="lib" path="build/jars/NetworkTables.jar"/>
-	<classpathentry kind="lib" path="build/jars/cscore.jar"/>
-	<classpathentry kind="lib" path="build/jars/CTRLib.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Prajwal/wpilib/user/java/lib/navx_frc.jar"/>
+	<classpathentry kind="lib" path="/home/cole/wpilib/user/java/lib/navx_frc.jar"/>
 	<classpathentry kind="var" path="wpilib" sourcepath="wpilib.sources"/>
 	<classpathentry kind="var" path="networktables" sourcepath="networktables.sources"/>
 	<classpathentry kind="var" path="opencv" sourcepath="opencv.sources"/>
 	<classpathentry kind="var" path="cscore" sourcepath="cscore.sources"/>
+	<classpathentry kind="lib" path="/home/cole/wpilib/user/java/lib/jeromq.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/jeromq.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
+	<classpathentry kind="lib" path="/home/cole/wpilib/user/java/lib/CTRLib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
