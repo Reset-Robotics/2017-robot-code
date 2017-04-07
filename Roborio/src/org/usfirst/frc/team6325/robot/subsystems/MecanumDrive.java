@@ -22,7 +22,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 	private final double deadzone = 0.1;
 	
 	//the PID values used for turning to a specific angle
-	private final double turnP = 0.1;
+	private final double turnP = 0.006;
 	private final double turnI = 0.0;
 	private final double turnD = 0.0;
 	private final double turnF = 0.0;
@@ -125,7 +125,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 			double rotatedForward = forward * Math.cos(angle) + left * Math.sin(angle);
 			double rotatedLeft = -forward * Math.sin(angle) + left * Math.cos(angle);
 			
-			forward = rotatedForward;
+			forward = rotatedForward; 
 			left = rotatedLeft;
 		}
 		
@@ -237,7 +237,7 @@ public class MecanumDrive extends Subsystem implements PIDOutput{
 		lockAngle(angle);
 		
 		while(Math.abs(navx.getAngle() - turnController.getSetpoint()) > turnThreshold){
-			drive(0.0, 0.0, angle, throttle);
+			drive(0.0, 0.0, 0, throttle);
 		}
 		
 		killMotors();

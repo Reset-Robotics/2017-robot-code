@@ -22,7 +22,7 @@ public class VisionAlign extends Command {
         requires(Robot.mecanumDrive);
     }
 
-    // Called just before this Command runs the first time
+    // Called just before this Command runs the first tsime
     protected void initialize() {
     	Robot.mecanumDrive.lockAngle(0.0);
     	

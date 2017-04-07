@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 import org.usfirst.frc.team6325.robot.commands.CloseGear;
 import org.usfirst.frc.team6325.robot.commands.OpenGear;
+import org.usfirst.frc.team6325.robot.commands.ResetDrivetrain;
+import org.usfirst.frc.team6325.robot.commands.ToggleFieldOriented;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -43,6 +45,9 @@ public class OI {
 	public Joystick joyDriver = new Joystick(0);
 	public Joystick joySecondary = new Joystick(1);
 	
+	public Button trigger = new JoystickButton(joyDriver, 1);
+	public Button reset = new JoystickButton(joyDriver, 2);
+	
 	public Button fire = new JoystickButton(joySecondary, 2);
 	public Button gearButton = new JoystickButton(joySecondary, 1);
 	public Button autoGear = new JoystickButton(joySecondary, 3);
@@ -52,6 +57,8 @@ public class OI {
 	public OI(){
 		gearButton.whenPressed(new OpenGear());
 		gearButton.whenReleased(new CloseGear());
+		trigger.whenPressed(new ToggleFieldOriented());
+		reset.whenPressed(new ResetDrivetrain());
 	}
 	
 	

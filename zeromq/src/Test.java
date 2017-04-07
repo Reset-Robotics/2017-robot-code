@@ -9,7 +9,7 @@ public class Test {
 		
 		ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
 		
-		subscriber.connect("tcp://localhost:5556");
+		subscriber.connect("tcp://10.63.25.10:5556");
 		
 		String filter = "displacement";
 		subscriber.subscribe(filter.getBytes());

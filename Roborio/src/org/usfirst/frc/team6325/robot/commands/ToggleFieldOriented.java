@@ -5,21 +5,19 @@ import org.usfirst.frc.team6325.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- 
+ *
  */
-public class LockAngle extends Command {
+public class ToggleFieldOriented extends Command {
 
-	private double ang;
 	
-    public LockAngle(double angle) {
-    	ang = angle;
+    public ToggleFieldOriented() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.mecanumDrive.lockAngle(ang);
+    	Robot.mecanumDrive.setFieldOriented(!Robot.mecanumDrive.getFieldOriented());
     }
 
     // Called repeatedly when this Command is scheduled to run

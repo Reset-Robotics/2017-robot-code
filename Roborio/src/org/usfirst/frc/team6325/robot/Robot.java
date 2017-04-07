@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team6325.robot.commands.Dashboard;
+import org.usfirst.frc.team6325.robot.commands.LockAngle;
+import org.usfirst.frc.team6325.robot.commands.VisionTest;
 import org.usfirst.frc.team6325.robot.commands.AutoGearCenter;
 import org.usfirst.frc.team6325.robot.commands.AutoGearLeft;
 import org.usfirst.frc.team6325.robot.commands.AutoGearRight;
@@ -55,6 +57,8 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gear center peg", new AutoGearCenter());
 		chooser.addObject("Gear left peg", new AutoGearLeft());
 		chooser.addObject("Gear right peg", new AutoGearRight());
+		chooser.addObject("gyro test", new LockAngle(90));
+		chooser.addObject("vision test", new VisionTest());
 		
 		mecanumDrive.init();
   
@@ -77,7 +81,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
+		mecanumDrive.unlockAngle();
+		mecanumDrive.setFieldOriented(false);
 	}
 
 	@Override
@@ -100,7 +105,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		mecanumDrive.init();
-		autonomousCommand = new AutoGearCenter();//chooser.getSelected();
+		autonomousCommand = chooser.getSelected();
 
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",

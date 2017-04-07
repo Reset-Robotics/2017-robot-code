@@ -16,8 +16,8 @@ public class AutoGearSide extends CommandGroup {
     public AutoGearSide(double angle) {
     	addSequential(new LockAngle(0.0));
         addSequential(new MoveTime(throttle, 0.0, firstMoveTime));
-        addSequential(new TurnToAngle(angle, turnThrottle));
         addSequential(new LockAngle(angle));
+        addSequential(new TurnToAngle(angle, turnThrottle));
         addSequential(new VisionAlign());
         addSequential(new MoveTime(throttle, 0.0, secondMoveTime));
         addSequential(new UnlockAngle());
