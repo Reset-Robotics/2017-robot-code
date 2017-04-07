@@ -91,7 +91,7 @@ app.factory('updateService', function(){
 			ultrasonic2: 0
 		},
 		autoMode:{
-			selectedMode: 'none',
+			selectedMode: 'forward',
 			availibleModes: {}
 		},
 		connected: false
@@ -178,6 +178,7 @@ app.controller('angleLockCtrl', function($scope, updateService){
 
 	$scope.select = function(name){
 		$scope.info.selected = name;
+		updateService.sendValue('autoMode/selectedMode', name);
 	};
 });
 
