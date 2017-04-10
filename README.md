@@ -2,25 +2,35 @@
 
 This repository is the Reset Robotics robot for the official 2017 FIRST Steamworks competition.
 
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
--
 
+## Control System
+
+### Sensors
+-NavX Gyro
+-Ultrasonic Sensors
+
+### Vision Tracking
+We are using a Jetson TX1.
+
+
+### Custom SmartDashboard
+
+
+### Autonomous
+Center Peg autonomous using PID loop and NavX
+Side Peg autonomous using Vision Tracking
+
+### Language Choice
+C / C++ is responsible for Coprocessor Code. We used C++ to utilize GPU Acceleration on the Jetson TX1. Java is used for our main robot code.
+
+-
+-
+-
+-
+-
+-
+-
+-
 
 ### Labels explained
 ##### Bug:
