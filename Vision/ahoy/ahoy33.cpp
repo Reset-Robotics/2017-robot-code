@@ -66,6 +66,7 @@ int main() {
     cv::createTrackbar("Value Upper Bound", "HSV Thresholding", &v_upperb, 255);
     
     std::vector<std::vector<cv::Point> > contours; //array of contours (which are each an array of points)
+    std::vector<std::vector<cv::Point> > rightContours; 
     
     
     
@@ -176,12 +177,12 @@ int main() {
             rightImgThreshold.copyTo(rightImgContour);
             
             //find contours
-            cv::findContours(rightImgContour, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+            cv::findContours(rightImgContour, rightContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
             
             //create bounding rectangles to identify what contours are actual targets
-            std::vector<cv::RotatedRect> boundRects(contours.size());
-            for(int i = 0; i < contours.size(); i++) {
-                boundRects[i] = cv::minAreaRect(cv::Mat(contours[i]));
+            std::vector<cv::RotatedRect> boundRects(rightContours.size());
+            for(int i = 0; i < rightContours.size(); i++) {
+                boundRects[i] = cv::minAreaRect(cv::Mat(rightContours[i]));
             }
             
             //identify which contours could be actual targets
@@ -190,8 +191,8 @@ int main() {
                 cv::Size s = boundRects[i].size;
                 
                 //filter out images
-                if (s.height * s.width < 1.25 * cv::contourArea(contours[i]) && s.height * s.width > 30) {
-                    poss_targets.insert(poss_targets.end(), contours[i]);
+                if (s.height * s.width < 1.25 * cv::contourArea(rightContours[i]) && s.height * s.width > 30) {
+                    poss_targets.insert(poss_targets.end(), rightContours[i]);
                 }
             }
             
@@ -204,7 +205,7 @@ int main() {
             
             rightImgOutput = rightImgResize.clone();
             
-            cv::drawContours(rightImgOutput, contours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
+            cv::drawContours(rightImgOutput, rightContours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
             
             //if we identify all targets calculate centers
             if (!targets.empty()) {
