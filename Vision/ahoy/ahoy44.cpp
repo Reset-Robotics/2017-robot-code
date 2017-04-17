@@ -112,11 +112,11 @@ int main() {
         rightSrc.upload(rightImgRaw);
 
         //gpu accelerated image transformations
-        cv::gpu::resize(src, resize, cv::Size(input.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
-                                              input.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
+        cv::gpu::resize(src, resize, cv::Size(leftCamera.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
+                                              leftCamera.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
                                      
-        cv::gpu::resize(rightSrc, rightResize, cv::Size(input.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
-                                              input.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
+        cv::gpu::resize(rightSrc, rightResize, cv::Size(rightCamera.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
+                                              rightCamera.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
         resize.download(imgResize);
         rightResize.download(rightImgResize);
 
