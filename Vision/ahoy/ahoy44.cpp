@@ -29,14 +29,19 @@ int main() {
     printf("Current exposure settings:\n");
         system("v4l2-ctl -d /dev/video0 -C exposure_auto");
         system("v4l2-ctl -d /dev/video0 -C exposure_absolute");
+	system("v4l2-ctl -d /dev/video1 -C exposure_auto");
+        system("v4l2-ctl -d /dev/video1 -C exposure_absolute");
 
         //set exposure to 5
         system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
         system("v4l2-ctl -d /dev/video0 -c exposure_absolute=5");
+	system("v4l2-ctl -d /dev/video1 -c exposure_auto=1");
+        system("v4l2-ctl -d /dev/video1 -c exposure_absolute=5");
 
         //print the exposures of the cameras
         printf("New exposure settings:\n");
         system("v4l2-ctl -d /dev/video0 -C exposure_absolute");
+	system("v4l2-ctl -d /dev/video1 -C exposure_absolute");
     int blur_size = 3; //size of the median blur kernel
     int img_scale_factor = 1; //halves the size of the picture
 
@@ -121,7 +126,7 @@ int main() {
 
         //download GpuMat from the GPU
         hsv.download(imgHSV);
-        rightImgHSV.download(rightHsv)
+        rightHsv.download(rightImgHSV);
 
         //end gpu accel
 
@@ -149,44 +154,78 @@ int main() {
                 poss_targets.insert(poss_targets.end(), contours[i]);
             }
         }
+	    
+	    
+	std::vector<cv::RotatedRect> boundRectsR(rightContours.size());
+        for(int i = 0; i < rightContours.size(); i++) {
+            boundRectsR[i] = cv::minAreaRect(cv::Mat(rightContours[i]));
+        }
+
+        //identify contours which could be actual targets
+        std::vector<std::vector<cv::Point> > poss_targets_r(0);
+        for(int i = 0; i < boundRectsR.size(); i++) {
+            cv::Size sr = boundRectsR[i].size;
+
+            //filter based on how much of the bounding rectangle is filled up by the contour and rectangles that are too small
+            if (sr.height * sr.width < 1.25 * cv::contourArea(rightContours[i]) && sr.height * sr.width > 30) {
+                poss_targets_r.insert(poss_targets_r.end(), rightContours[i]);
+            }
+        }
 
         //if we identify two possible targets then they are correct targets
-        std::vector<std::vector<cv::Point> > targets(0);
-        if (poss_targets.size() == 2) {
+        std::vector<std::vector<cv::Point> > targetsR(0);
+        if (poss_targets_r.size() == 2) {
             targets = poss_targets;
         }
 
         imgOutput = imgResize.clone(); //output image is the blurred image with information on it
+	rightImgOutput = rightImgResize.clone();
 
         cv::drawContours(imgOutput, contours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
 
-        //save and show the output image
-        output.write(imgOutput);
-	    cv::namedWindow("stream", CV_WINDOW_AUTOSIZE);
-	    cv::namedWindow("raw", CV_WINDOW_AUTOSIZE);
-        cv::imshow("stream", imgThreshold);
-	    cv::imshow("raw", imgRaw);
-        //cv::waitKey(0);
-        //if spacebar is pressed, quit
-        char c = cv::waitKey(1);
-        if (c == ' ') {
-            printf("Stream has ended.");
-            //break;
-        }
+          rightImgOutput = rightImgResize.clone();
+            
+          cv::drawContours(rightImgOutput, rightContours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
+            
+            //if we identify all targets calculate centers
+            if (!targets.empty()) {
+                cv::Rect r = boundingRect(targets[1]);
+                cv::Rect  r1 = boundingRect(targets[0]);
+                double centerX= r.x + (r.width/2);
+                double centerX1= r1.x + (r1.width/2);
+                double leftPixels= ((centerX + centerX1) / 2) - (imageWidth / 2);
+                std::cout << "Left pix" << leftPixels << std::endl;
+		zmq::message_t message(20);
+            	snprintf ((char *) message.data(), 20, "displacement left %f", leftPixels);
+            	publisher.send(message);
+                // Send message
+       		 }
+	    
+	    if (!targetsR.empty()) {
+                cv::Rect r = boundingRect(targetsR[1]);
+                cv::Rect  r1 = boundingRect(targetsR[0]);
+                double centerX= r.x + (r.width/2);
+                double centerX1= r1.x + (r1.width/2);
+                double rightPixels= ((centerX + centerX1) / 2) - (imageWidth / 2);
+                std::cout << "Right pix" << rightPixels << std::endl;
+		//zmq::message_t message(20);
+            	//snprintf ((char *) message.data(), 20, "displacement left %f", rightPixels);
+            	//publisher.send(message);
+                // Send message
+       		 }
+            
+            //save and show the output image
+            //rightOutput.write(rightImgOutput);
+            cv::imshow("streamRight", rightImgThreshold);
+	    cv::imgshow("streamRight", imgThreshold);
+            
+            //if spacebar is pressed, quit
+            char c = cv::waitKey(1);
+            if (c == ' ') {
+                printf("Stream has ended.");
+                break;
+            }
+            
+        
 
-        //if we identify targets print all this
-        if (!targets.empty()) {
-        	cv::Rect r = boundingRect(targets[1]); // try regular parentheses
-        	cv::Rect  r1 = boundingRect(targets[0]);
-        	double centerX= r.x + (r.width/2);
-          	double centerX1= r1.x + (r1.width/2);
-            double distance2Pixels= ((centerX + centerX1) / 2) - (640 / 2); // 640 is camera width
-			std::cout << "Distance pix" << distance2Pixels << std::endl;
-  
-			zmq::message_t message(20);
-
-			snprintf ((char *) message.data(), 20, "displacement %f", distance2Pixels);
-			publisher.send(message);
-        }
-}
-}
+    }
