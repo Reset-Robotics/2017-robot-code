@@ -95,6 +95,9 @@ int main() {
     cv::VideoCapture rightCamera(1);
     cv::VideoWriter output;
 
+    double left = 0;
+    double right = 0;
+
     //loop for each frame
     for (;;) {
         //reads the image and checks if we dont have video feed
@@ -193,31 +196,42 @@ int main() {
                 cv::Rect  r1 = boundingRect(targets[0]);
                 double centerX= r.x + (r.width/2);
                 double centerX1= r1.x + (r1.width/2);
-                double leftPixels= ((centerX + centerX1) / 2) - (imageWidth / 2);
-                std::cout << "Left pix" << leftPixels << std::endl;
-		zmq::message_t message(20);
-            	snprintf ((char *) message.data(), 20, "displacement left %f", leftPixels);
-            	publisher.send(message);
+                left= ((centerX + centerX1) / 2);
+                std::cout << "Left pix" << left << std::endl;
+		//zmq::message_t message(20);
+            	//snprintf ((char *) message.data(), 20, "displacement left %f", leftPixels);
+            	//publisher.send(message);
                 // Send message
        		 }
+             else{
+                left = 0; //if no target is detected, send 0
+             }   
 	    
 	    if (!targetsR.empty()) {
                 cv::Rect r = boundingRect(targetsR[1]);
                 cv::Rect  r1 = boundingRect(targetsR[0]);
                 double centerX= r.x + (r.width/2);
                 double centerX1= r1.x + (r1.width/2);
-                double rightPixels= ((centerX + centerX1) / 2) - (imageWidth / 2);
-                std::cout << "Right pix" << rightPixels << std::endl;
+                right= imageWidth - ((centerX + centerX1) / 2);
+                std::cout << "Right pix" << right << std::endl;
 		//zmq::message_t message(20);
             	//snprintf ((char *) message.data(), 20, "displacement left %f", rightPixels);
             	//publisher.send(message);
                 // Send message
        		 }
+             else{
+                right = 0; //if no target is detected, send 0
+             }
+
+            zmq::message_t message(20);
+            	snprintf ((char *) message.data(), 20, "displacement %f %f", left, right);
+            	publisher.send(message);
+            //send message
             
             //save and show the output image
             //rightOutput.write(rightImgOutput);
             cv::imshow("streamRight", rightImgThreshold);
-	    cv::imgshow("streamRight", imgThreshold);
+	        cv::imgshow("streamRight", imgThreshold);
             
             //if spacebar is pressed, quit
             char c = cv::waitKey(1);

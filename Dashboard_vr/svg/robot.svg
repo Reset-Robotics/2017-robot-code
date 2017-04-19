@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250px" height="250px" viewBox="0 0 1630 820" preserveAspectRatio="xMidYMid meet">
+  <defs id="svgEditorDefs">
+    <marker id="arrow10-8-right" markerHeight="8" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="-3" refY="0" viewBox="-15 -5 20 20">
+      <path d="M -15 -5 L 0 0 L -15 5 z" fill="#8D48AB" />
+    </marker>
+    <marker id="arrow20-16-left" markerHeight="16" markerUnits="strokeWidth" markerWidth="20" orient="auto" refX="3" refY="0" viewBox="0 -5 20 20">
+      <path d="M 15 -5 L 0 0 L 15 5 z" fill="#8D48AB" />
+    </marker>
+    <marker id="circle8" markerHeight="8" markerUnits="strokeWidth" markerWidth="8" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+      <circle cx="0" cy="0" fill="#8D48AB;stroke:none;" r="5" />
+    </marker>
+    <marker id="circle4" markerHeight="4" markerUnits="strokeWidth" markerWidth="4" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+      <circle cx="0" cy="0" r="5" style="fill:#8D48AB;stroke:none;" />
+    </marker>
+    <marker id="circle6" markerHeight="6" markerUnits="strokeWidth" markerWidth="6" orient="auto" refX="0" refY="0" viewBox="-5 -5 10 10">
+      <circle cx="0" cy="0" r="5" style="fill:#8D48AB;stroke:none;" />
+    </marker>
+  </defs>
+  <rect x="10" y="10" stroke="white" id="noPurple1" style="stroke-width: 2px; fill-opacity: 0;" width="200" height="220" />
+  <g id="e390_group" transform="translate(5, 160)">
+    <rect x="10" y="10" stroke="#8D48AB" id="e41_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+    <line id="e231_line" x1="10" y1="30" x2="40" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e271_line" x1="10" y1="40" x2="40" y2="20" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e285_line" x1="10" y1="50" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e299_line" x1="10" y1="60" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e352_line" x1="10" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e366_line" x1="40" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  </g>
+  <line id="noPurple2" x1="50" y1="10" x2="50" y2="230" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <g id="e415_group" transform="translate(5, 10)">
+    <rect x="10" y="10" stroke="#8D48AB" id="e415_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+    <line id="e415_line" x1="10" y1="10" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e416_line" x1="10" y1="20" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e417_line" x1="10" y1="30" x2="40" y2="50" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e418_line" x1="10" y1="40" x2="40" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e419_line" x1="40" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e420_line" x1="10" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  </g>
+  <g id="e610_group" transform="translate(165, 160)">
+    <rect x="10" y="10" stroke="#8D48AB" id="e610_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+    <line id="e610_line" x1="10" y1="10" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e611_line" x1="10" y1="20" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e612_line" x1="10" y1="30" x2="40" y2="50" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e613_line" x1="10" y1="40" x2="40" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e614_line" x1="40" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e615_line" x1="10" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  </g>
+  <g id="e615_group" transform="translate(165, 10)" stroke="#8D48AB">
+    <rect x="10" y="10" stroke="#8D48AB" id="e615_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="30" height="50" ry="0" rx="0" />
+    <line id="e616_line" x1="10" y1="30" x2="40" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e617_line" x1="10" y1="40" x2="40" y2="20" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e618_line" x1="10" y1="50" x2="40" y2="30" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e619_line" x1="10" y1="60" x2="40" y2="40" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e620_line" x1="10" y1="20" x2="25" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+    <line id="e621_line" x1="40" y1="50" x2="25" y2="60" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  </g>
+  <line id="noPurple3" x1="170" y1="10" x2="170" y2="230.00000000000003" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple4" x1="50" y1="50" x2="170" y2="50" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple5" x1="60" y1="50" x2="60" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple6" x1="60" y1="20" x2="90" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple7" x1="160" y1="50" x2="160" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple8" x1="160" y1="20" x2="130" y2="20" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <rect x="80" y="190" stroke="#8D48AB" id="e2265_rectangle" style="stroke-width: 2px; fill-opacity: 0;" width="60" height="30" />
+  <rect x="70" y="170" stroke="white" id="noPurple9" style="stroke-width: 2px; fill-opacity: 0;" width="5" height="50" />
+  <rect x="145" y="169.99999999999997" stroke="white" id="noPurple10" style="stroke-width: 2px; fill-opacity: 0;" width="5" height="50" />
+  <line id="noPurple12" x1="75" y1="205" x2="80" y2="205" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="noPurple11" x1="140" y1="205" x2="145" y2="205" stroke="white" style="stroke-width: 2px; fill: none;" />
+  <line id="e2639_line" x1="270" y1="10" x2="320" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+  <line id="e2678_line" x1="270" y1="65" x2="320" y2="65" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+  <line id="e2690_line" x1="270" y1="120" x2="320" y2="120" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+  <line id="e2730_line" x1="270" y1="175" x2="320" y2="175" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+  <line id="e2742_line" x1="270" y1="230" x2="320" y2="230" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-end: url(&quot;#circle4&quot;);" />
+  <line id="e2829_line" x1="190" y1="45" x2="235" y2="45" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+  <line id="e2856_line" x1="235" y1="45" x2="270" y2="10" stroke="#8D48AB" style="stroke-width: 2px; fill: none; stroke-linecap: round;" />
+  <line id="e2883_line" x1="30" y1="45" x2="85" y2="100" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+  <line id="e2897_line" x1="30" y1="195" x2="85" y2="140" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+  <line id="e3015_line" x1="85" y1="100" x2="235" y2="100" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e3029_line" x1="85" y1="140" x2="250" y2="140" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e3108_line" x1="235" y1="100" x2="270" y2="65" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e3122_line" x1="250" y1="140" x2="270" y2="120" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e3188_line" x1="190" y1="195" x2="250" y2="195" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+  <line id="e3293_line" x1="250" y1="195" x2="270" y2="175" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e4158_line" x1="110" y1="205" x2="145" y2="240" stroke="#8D48AB" style="stroke-width: 2px; fill: none; marker-start: url(&quot;#circle4&quot;);" />
+  <line id="e4172_line" x1="145" y1="240" x2="260" y2="240" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+  <line id="e4186_line" x1="260" y1="240" x2="270" y2="230" stroke="#8D48AB" style="stroke-width: 2px; fill: none;" />
+</svg>

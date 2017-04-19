@@ -1,0 +1,59 @@
+@keyframes arrow1Rotate{
+  from{transform: rotate(0);}
+  to{transform: rotate(45deg);}
+}
+
+@keyframes arrow2Rotate{
+  from{transform: rotate(0);}
+  to{transform: rotate(135deg);}
+}
+
+@keyframes arrow3Rotate{
+  from{transform: rotate(0);}
+  to{transform: rotate(225deg);}
+}
+
+@keyframes arrow4Rotate{
+  from{transform: rotate(0);}
+  to{transform: rotate(315deg);}
+}
+
+#baseline{
+  /*transform-origin: 100% 100%;
+  transform: rotate(10deg);*/
+}
+
+#arrow{
+  transform-origin: 400px 150px;
+  transform: rotate(45deg);
+  animation: arrow1Rotate 0.143s linear 0s 1 alternate;
+}
+
+#arrow2{
+  transform-origin: 400px 150px;
+  transform: rotate(135deg);
+  animation-name: arrow2Rotate;
+  animation-duration: 0.429s;
+  animation-timing-function: linear;
+}
+
+#arrow3{
+  transform-origin: 400px 150px;
+  transform: rotate(225deg);
+  animation-name: arrow3Rotate;
+  animation-duration: 0.714s;
+  animation-timing-function: linear;
+}
+
+#arrow4{
+  transform-origin: 400px 150px;
+  transform: rotate(315deg);
+  animation-name: arrow4Rotate;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+.arrowInner{
+  transform-origin: 400px 150px;
+  transform: translate(-100px, 0);
+}

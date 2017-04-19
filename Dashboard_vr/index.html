@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="Dashboard">
+
+<head>
+  <meta charset="utf-8">
+  <title>FRC Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.css">
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+  <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+  <script src="bower_components/angular-material/angular-material.min.js"></script>
+  <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+  <!--script src="bower_components/angular-touch/angular-touch.min.js"></script-->
+  <!--script src="bower_components/d3/d3.js"></script-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.4/nv.d3.js"></script>
+  <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+  <script src="/networktables/networktables.js"></script>
+  <script src="ui.js"></script>
+  <script src="directives/compass.js"></script>
+  <script src="directives/circleChart.js"></script>
+  <script src="directives/barChart.js"></script>
+</head>
+
+<body>
+
+  <div ng-controller="uiCtrl" class="background" layout="column" layout-fill flex="grow">
+    <!-- -->
+    <div flex="0">
+    </div>
+    <div class="hidden" id="main" layout="row" flex="100">
+      <div flex="33">
+        <div flex layout="column" layout-align="space-around center">
+          <p class="label">Battery Voltage:</p>
+          <circle-chart class="circleChart" value="11.6" unit="v" min="0" max="12" width="200" height="200"></circle-chart>
+        </div>
+        <div flex layout="column" layout-align="space-around center">
+          <p class="label">Time Remaining:</p>
+          <circle-chart class="circleChart" value="146" unit="s" min="0" max="230" width="200" height="200"></circle-chart>
+        </div>
+      </div>
+      <div class="mainContainer" flex="33">
+        <!--canvas id="circle" width="600" height="600"></canvas-->
+      </div>
+      <div flex="33" layout="column">
+        <div id="textContainer1" flex="grow">
+          <p id="gyroOn" class="label">Gyro Drive: <span class="green">ON</span></p>
+          <p id="angleLocked" class="label">Angle Lock: <span class="red">OFF</span></p>
+          <p id="gearText" class="label green">Gear Collected</p>
+        </div>
+      </div>
+    </div>
+    <div id="gearCollected" class="green hidden" flex="grow" layout="column" layout-align="center">
+      <p class="centeredText bigText"><span class="bigBrackets">[</span>GEAR COLLECTED<span class="bigBrackets">]</span></p>
+    </div>
+    <div id="gearDropped" class="red hidden" flex="grow" layout="column" layout-align="center">
+      <p class="centeredText bigText"><span class="bigBrackets">[</span>GEAR DROPPED<span class="bigBrackets">]</span></p>
+    </div>
+    <div id="30Secs" class="red hidden" flex="grow" layout="column" layout-align="center">
+      <p class="centeredText bigText"><span class="bigBrackets">[</span>30 SECONDS LEFT<span class="bigBrackets">]</span></p>
+    </div>
+    <div flex="0">
+    </div>
+    <div id="alignment" flex="grow" layout="column" layout-align="center center">
+      <p class="centeredText bigText"><span class="bigBrackets">[</span>ALIGNMENT<span class="bigBrackets">]</span></p>
+      <div>
+        <svg height="300" width="800">
+          <line id="baseline" x1="100" y1="150" x2="700" y2="150" stroke-width="5px" stroke="#000000" />
+          <circle cx="400" cy="150" r="3" fill="#aa33aa" />
+          <g id="arrow">
+            <g class="arrowInner">
+              <polygon points="394,150 379,135 370,135 385,150 370,165 379,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="412,150 397,135 388,135 403,150 388,165 397,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="430,150 415,135 406,135 421,150 406,165 415,165" fill="#00ff00" stroke="#00ff00" />
+            </g>
+          </g>
+          <g id="arrow2">
+            <g class="arrowInner">
+              <polygon points="394,150 379,135 370,135 385,150 370,165 379,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="412,150 397,135 388,135 403,150 388,165 397,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="430,150 415,135 406,135 421,150 406,165 415,165" fill="#00ff00" stroke="#00ff00" />
+            </g>
+          </g>
+          <g id="arrow3">
+            <g class="arrowInner">
+              <polygon points="394,150 379,135 370,135 385,150 370,165 379,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="412,150 397,135 388,135 403,150 388,165 397,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="430,150 415,135 406,135 421,150 406,165 415,165" fill="#00ff00" stroke="#00ff00" />
+            </g>
+          </g>
+          <g id="arrow4">
+            <g class="arrowInner">
+              <polygon points="394,150 379,135 370,135 385,150 370,165 379,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="412,150 397,135 388,135 403,150 388,165 397,165" fill="#00ff00" stroke="#00ff00" />
+              <polygon points="430,150 415,135 406,135 421,150 406,165 415,165" fill="#00ff00" stroke="#00ff00" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <p class="centeredText bigText"><span class="bigBrackets">[</span>0.3<span class="bigBrackets">]</span></p>
+    </div>
+    <script>
+      var canvas = document.getElementById('circle');
+      var ctx = canvas.getContext('2d');
+      ctx.strokeStyle = '#8D48AB';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(300, 300, 295, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      document.addEventListener("keydown", function (e) {
+        if (e.which === 123) {
+          require('remote').getCurrentWindow().toggleDevTools();
+        } else if (e.which === 116) {
+          location.reload();
+        }
+      });
+    </script>
+</body>
+
+</html>
