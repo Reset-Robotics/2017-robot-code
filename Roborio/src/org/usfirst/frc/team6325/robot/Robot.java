@@ -18,6 +18,7 @@ import org.usfirst.frc.team6325.robot.commands.AutoGearRight;
 import org.usfirst.frc.team6325.robot.commands.AutoMoveForward;
 import org.usfirst.frc.team6325.robot.subsystems.Climber;
 import org.usfirst.frc.team6325.robot.subsystems.GearMechanism;
+import org.usfirst.frc.team6325.robot.subsystems.Jetson;
 import org.usfirst.frc.team6325.robot.subsystems.MecanumDrive;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -33,6 +34,8 @@ public class Robot extends IterativeRobot {
 	public static final MecanumDrive mecanumDrive = new MecanumDrive();
 	public static final GearMechanism gearMechanism = new GearMechanism();
 	public static final Climber climber = new Climber();
+	
+	public static Jetson jetson = null;
 	
 	public static OI oi;
 	
@@ -70,6 +73,9 @@ public class Robot extends IterativeRobot {
 	
 		
 		table = NetworkTable.getTable("LiftTracker");
+		
+		jetson = new Jetson("jetsonThread");
+		jetson.start();
 		
 		Dashboard.update();
 	}

@@ -2,6 +2,7 @@ package org.usfirst.frc.team6325.robot.commands;
 
 import org.usfirst.frc.team6325.robot.Robot;
 import org.usfirst.frc.team6325.robot.RobotMap;
+import org.usfirst.frc.team6325.robot.subsystems.Jetson;
 import org.zeromq.ZMQ;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -24,26 +25,30 @@ public class VisionAlign extends Command {
 
     // Called just before this Command runs the first tsime
     protected void initialize() {
-    	Robot.mecanumDrive.lockAngle(0.0);
-    	
-    	ZMQ.Context context = ZMQ.context(1);
-		subscriber = context.socket(ZMQ.SUB);
-		
-		subscriber.connect("tcp://" + RobotMap.jetsonIP + ":5801");
-		
-		String filter = "displacement";
-		subscriber.subscribe(filter.getBytes());
+    	//Robot.mecanumDrive.lockAngle(0.0);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-		String data = subscriber.recvStr(0).trim();
-    	String[] strings = data.split(" ");
-    			
-    	String str = strings[1].trim().replaceAll("[^\\d|\\.|-]", "");
-    	double offset = Double.parseDouble(str);
-    	
-    	Robot.mecanumDrive.drive(0.0, offset * visionMoveSensetivity, 0.0, 0.5);
+		double l = Jetson.getLeftDisplacement();
+		double r = Jetson.getLeftDisplacement();
+		
+		double offset = 0;
+		
+		if(l != 0 && r != 0){
+			offset = l - r;
+		}
+		else if(l == 0 && r != 0){
+			offset = 100;
+		}
+		else if(l != 0 && r == 0){
+			offset = -100;
+		}
+		else offset = 0;
+		
+		System.out.println("Offset: " + offset);
+		
+		Robot.mecanumDrive.drive(0.0, offset * visionMoveSensetivity, 0, 1);
     	
     	if(Math.abs(offset) < 5.0){
     		done = true;
