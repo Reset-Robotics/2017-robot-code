@@ -24,11 +24,11 @@ unset(CUDA_USE_STATIC_CUDA_RUNTIME CACHE)
 option(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 
 #Creating executable for ahoy script
-add_executable(ahoy ahoy.cpp)
+add_executable(ahoy22 ahoy22.cpp)
 
 #Link libraries to ahoy executable
-target_link_libraries(ahoy ${OpenCV_LIBS})
-target_link_libraries(ahoy zmq)
-target_link_libraries(ahoy ${allwpilib/wpilibc/athena/include})
-target_link_libraries(ahoy ${WPILib.h})
-target_link_libraries(ahoy ${zmq.h})
+target_link_libraries(ahoy22 ${OpenCV_LIBS})
+target_link_libraries(ahoy22 zmq)
+target_link_libraries(ahoy22 ${allwpilib/wpilibc/athena/include})
+target_link_libraries(ahoy22 ${WPILib.h})
+target_link_libraries(ahoy22 ${zmq.h})
