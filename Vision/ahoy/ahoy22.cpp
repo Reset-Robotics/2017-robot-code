@@ -1,3 +1,7 @@
+//Reset Robotics 2017
+//NVIDIA Jetson Vision Tracking
+
+//Libraries
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "opencv2/gpu/gpu.hpp"
@@ -17,7 +21,7 @@
 #include <zmq.hpp>
 
 
-
+//Main
 int main() {
 
 	zmq::context_t context (1);
@@ -40,7 +44,7 @@ int main() {
     int blur_size = 3; //size of the median blur kernel
     int img_scale_factor = 1; //halves the size of the picture
 
-    
+
     //distance tracking values
 
     //HSV Thresholding Defaults (green LED ring and Exposure of 5 on camera)
@@ -160,7 +164,7 @@ int main() {
           	double centerX1= r1.x + (r1.width/2);
             double distance2Pixels= ((centerX + centerX1) / 2) - (640 / 2); // 640 is camera width
 			std::cout << "Distance pix" << distance2Pixels << std::endl;
-  
+
 			zmq::message_t message(20);
 
 			snprintf ((char *) message.data(), 20, "displacement %f", distance2Pixels);
@@ -168,4 +172,3 @@ int main() {
         }
 }
 }
-

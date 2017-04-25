@@ -1,3 +1,7 @@
+//Reset Robotics 2017
+//NVIDIA Jetson Vision Tracking Header
+
+//Libraries
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "opencv2/gpu/gpu.hpp"
@@ -17,7 +21,7 @@
 #include <zmq.hpp>
 
 
-
+//Main
 int main() {
 
 	zmq::context_t context (1);
@@ -45,7 +49,7 @@ int main() {
     int blur_size = 3; //size of the median blur kernel
     int img_scale_factor = 1; //halves the size of the picture
 
-    
+
     //distance tracking values
 
     //HSV Thresholding Defaults (green LED ring and Exposure of 5 on camera)
@@ -64,7 +68,7 @@ int main() {
     cv::Mat imgThreshold; //binary image from HSV thresholding
     cv::Mat imgContour; //finding countours messes up the threshold image
     cv::Mat imgOutput; //final image
-    
+
     cv::Mat rightImgRaw; //input image
     cv::Mat rightImgResize;
     cv::Mat rightImgHSV; //switch to HSV colorspace
@@ -86,7 +90,7 @@ int main() {
     cv::createTrackbar("Value Upper Bound", "HSV Thresholding", &v_upperb, 255);
 
     std::vector<std::vector<cv::Point> > contours; //array of contours (which are each an array of points)
-    std::vector<std::vector<cv::Point> > rightContours; 
+    std::vector<std::vector<cv::Point> > rightContours;
 
 
 
@@ -104,7 +108,7 @@ int main() {
         if (!leftCamera.read(imgRaw)) {
             break;
         }
-        
+
         if (!rightCamera.read(rightImgRaw)) {
             break;
         }
@@ -117,13 +121,13 @@ int main() {
         //gpu accelerated image transformations
         cv::gpu::resize(src, resize, cv::Size(leftCamera.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
                                               leftCamera.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
-                                     
+
         cv::gpu::resize(rightSrc, rightResize, cv::Size(rightCamera.get(CV_CAP_PROP_FRAME_WIDTH) / img_scale_factor,
                                               rightCamera.get(CV_CAP_PROP_FRAME_HEIGHT) / img_scale_factor), CV_INTER_CUBIC);
         resize.download(imgResize);
         rightResize.download(rightImgResize);
 
-        
+
         cv::gpu::cvtColor(resize, hsv, CV_BGR2HSV);
         cv::gpu::cvtColor(rightResize, rightHsv, CV_BGR2HSV);
 
@@ -133,7 +137,7 @@ int main() {
 
         //end gpu accel
 
-        
+
         cv::inRange(imgHSV, cv::Scalar(h_lowerb, s_lowerb, v_lowerb), cv::Scalar(h_upperb, s_upperb, v_upperb), imgThreshold);
         cv::inRange(rightImgHSV, cv::Scalar(h_lowerb, s_lowerb, v_lowerb), cv::Scalar(h_upperb, s_upperb, v_upperb), rightImgThreshold);
         imgThreshold.copyTo(imgContour);
@@ -157,8 +161,8 @@ int main() {
                 poss_targets.insert(poss_targets.end(), contours[i]);
             }
         }
-	    
-	    
+
+
 	std::vector<cv::RotatedRect> boundRectsR(rightContours.size());
         for(int i = 0; i < rightContours.size(); i++) {
             boundRectsR[i] = cv::minAreaRect(cv::Mat(rightContours[i]));
@@ -187,9 +191,9 @@ int main() {
         cv::drawContours(imgOutput, contours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
 
           rightImgOutput = rightImgResize.clone();
-            
+
           cv::drawContours(rightImgOutput, rightContours, -1, cv::Scalar(0, 255, 0)); //draw all contours in green
-            
+
             //if we identify all targets calculate centers
             if (!targets.empty()) {
                 cv::Rect r = boundingRect(targets[1]);
@@ -205,8 +209,8 @@ int main() {
        		 }
              else{
                 left = 0; //if no target is detected, send 0
-             }   
-	    
+             }
+
 	    if (!targetsR.empty()) {
                 cv::Rect r = boundingRect(targetsR[1]);
                 cv::Rect  r1 = boundingRect(targetsR[0]);
@@ -227,19 +231,19 @@ int main() {
             	snprintf ((char *) message.data(), 20, "displacement %f %f", left, right);
             	publisher.send(message);
             //send message
-            
+
             //save and show the output image
             //rightOutput.write(rightImgOutput);
             cv::imshow("streamRight", rightImgThreshold);
 	        cv::imgshow("streamRight", imgThreshold);
-            
+
             //if spacebar is pressed, quit
             char c = cv::waitKey(1);
             if (c == ' ') {
                 printf("Stream has ended.");
                 break;
             }
-            
-        
+
+
 
     }
