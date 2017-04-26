@@ -1,5 +1,5 @@
 //Reset Robotics 2017
-//NVIDIA Jetson Vision Tracking Header
+//NVIDIA Jetson Dual Camera Vision Tracking 
 
 //Libraries
 #include <opencv2/highgui/highgui.hpp>
