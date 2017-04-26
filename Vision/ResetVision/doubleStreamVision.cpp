@@ -25,28 +25,28 @@
 int main()
 {
 
-	zmq::context_t context (1);
-	zmq::socket_t publisher(context, ZMQ_PUB);
-	publisher.bind("tcp://*:5801"); // Available ports are 1180-1190 and 5800 to 5810. Do not use 1181.
+  zmq::context_t context (1);
+  zmq::socket_t publisher(context, ZMQ_PUB);
+  publisher.bind("tcp://*:5801"); // Available ports are 1180-1190 and 5800 to 5810. Do not use 1181.
 
-	std::cout << "starting server\n";
+  std::cout << "starting server\n";
 
   printf("Current exposure settings:\n");
   system("v4l2-ctl -d /dev/video0 -C exposure_auto");
   system("v4l2-ctl -d /dev/video0 -C exposure_absolute");
-	system("v4l2-ctl -d /dev/video1 -C exposure_auto");
+  system("v4l2-ctl -d /dev/video1 -C exposure_auto");
   system("v4l2-ctl -d /dev/video1 -C exposure_absolute");
 
   //set exposure to 5
   system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
   system("v4l2-ctl -d /dev/video0 -c exposure_absolute=5");
-	system("v4l2-ctl -d /dev/video1 -c exposure_auto=1");
+  system("v4l2-ctl -d /dev/video1 -c exposure_auto=1");
   system("v4l2-ctl -d /dev/video1 -c exposure_absolute=5");
 
   //print the exposures of the cameras
   printf("New exposure settings:\n");
   system("v4l2-ctl -d /dev/video0 -C exposure_absolute");
-	system("v4l2-ctl -d /dev/video1 -C exposure_absolute");
+  system("v4l2-ctl -d /dev/video1 -C exposure_absolute");
   int blur_size = 3; //size of the median blur kernel
   int img_scale_factor = 1; //halves the size of the picture
 
@@ -213,10 +213,7 @@ int main()
       double centerX1= r1.x + (r1.width/2);
       left= ((centerX + centerX1) / 2);
       std::cout << "Left pix" << left << std::endl;
-			//zmq::message_t message(20);
-      //snprintf ((char *) message.data(), 20, "displacement left %f", leftPixels);
-      //publisher.send(message);
-      // Send message
+      
     }
     else
 		{
@@ -225,16 +222,13 @@ int main()
 
 	  if (!targetsR.empty())
 		{
-    	cv::Rect r = boundingRect(targetsR[1]);
+      cv::Rect r = boundingRect(targetsR[1]);
       cv::Rect  r1 = boundingRect(targetsR[0]);
       double centerX= r.x + (r.width/2);
       double centerX1= r1.x + (r1.width/2);
       right= imageWidth - ((centerX + centerX1) / 2);
       std::cout << "Right pix" << right << std::endl;
-			//zmq::message_t message(20);
-      //snprintf ((char *) message.data(), 20, "displacement left %f", rightPixels);
-      //publisher.send(message);
-      // Send message
+			
     }
     else
 		{
