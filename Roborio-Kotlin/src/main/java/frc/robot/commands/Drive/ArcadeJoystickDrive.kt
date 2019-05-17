@@ -33,7 +33,7 @@ public class ArcadeJoystickDrive : Command()
         }
         else Drivetrain.unlockAngle()
         
-        Drivetrain.drive(-xDirection, -yDirection, spin, throttle)
+        Drivetrain.drive(xDirection, -yDirection, spin, throttle)
         return false;
     }
 
