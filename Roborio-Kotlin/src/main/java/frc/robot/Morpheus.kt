@@ -11,9 +11,11 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 // Subsystems
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Climber
 
 // Miscellaneous Imports
 import frc.robot.commands.Drive.ToggleFieldOriented
+import frc.robot.commands.Climber.ClimberJoystickDrive
 
 
 public class Morpheus : Robot()
@@ -24,6 +26,7 @@ public class Morpheus : Robot()
 
     // Initialize subsystem instance objects for this script
     public val drivetrain: Drivetrain = Drivetrain
+    public val climber: Climber = Climber
 
     // OI Initialization
     public var oi: OI = OI()
@@ -32,6 +35,7 @@ public class Morpheus : Robot()
     override fun onCreate()
     {
         drivetrain.onCreate()
+        climber.onCreate()
     	//camera0.setResolution(320, 240)
         //camera0.setFPS(30)
    
@@ -42,7 +46,7 @@ public class Morpheus : Robot()
     override fun executeDisabled()
     {
         drivetrain.unlockAngle()
-
+        climber.onCreate()
         // any dashboard data populatin here too
     }
 
@@ -50,6 +54,7 @@ public class Morpheus : Robot()
     override fun onAutoStart()
     {
         drivetrain.onCreate()
+        climber.onCreate()
     }
 
     // Runs periodically during autonomous(sandstorm); WPILib autonomousPeriodic() equivalent
@@ -62,12 +67,15 @@ public class Morpheus : Robot()
     override fun onStart()
     {
         drivetrain.onCreate()
+        climber.onCreate()
     }
      
 
     // Runs periodically during teleop; WPILib teleopPeriodic() equivalent
     override fun executeTeleop()
     {
+        drivetrain.onCreate()
+        climber.onCreate()
         oi.OI()
 
         // put dashboard data here

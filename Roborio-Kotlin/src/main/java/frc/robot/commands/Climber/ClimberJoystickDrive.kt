@@ -19,7 +19,7 @@ public class ClimberJoystickDrive : Command()
     {              
         val climberData: ClimberData = ClimberData()
 
-        var yDirection: Double = OI().joystickLeft.getY()
+        var yDirection: Double = OI().joystickRight.getY()
 
         if (Math.abs(yDirection) < climberData.deadzone) yDirection = 0.0 
         
